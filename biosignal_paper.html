@@ -5129,23 +5129,30 @@ async function fetchPMCFullText(doi, pmid) {
     console.log('[BioSignal] PMC XML length:', xmlText.length);
 
     // Step 3: Extract body text from JATS XML
+    // Strip non-body sections
     xmlText = xmlText
       .replace(/<front>[\s\S]*?<\/front>/gi, '')
       .replace(/<back>[\s\S]*?<\/back>/gi, '')
       .replace(/<ref-list[\s\S]*?<\/ref-list>/gi, '')
       .replace(/<table-wrap[\s\S]*?<\/table-wrap>/gi, '')
       .replace(/<fig[\s\S]*?<\/fig>/gi, '')
-      .replace(/<supplementary-material[\s\S]*?<\/supplementary-material>/gi, '');
+      .replace(/<supplementary-material[\s\S]*?<\/supplementary-material>/gi, '')
+      // Strip author manuscript watermark tags
+      .replace(/<watermark[\s\S]*?<\/watermark>/gi, '')
+      .replace(/Author Manuscript/gi, '');
 
     var tmp = document.createElement('div');
     tmp.innerHTML = xmlText;
     var bodyText = (tmp.textContent || tmp.innerText || '')
       .replace(/\s+/g, ' ')
       .replace(/\[\d+\]/g, '')
+      // Remove repeated "Author Manuscript" watermark text
+      .replace(/Author Manuscript/gi, '')
       .trim();
 
     console.log('[BioSignal] Extracted body text length:', bodyText.length);
-    if (bodyText.length < 500) return null;
+    // Lower threshold - author manuscripts may have less extractable text
+    if (bodyText.length < 200) return null;
     return bodyText;
 
   } catch(e) {
