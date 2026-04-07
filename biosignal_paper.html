@@ -5078,85 +5078,55 @@ function restoreStepLabels() {
 
 //  AI prompt for paper-grounded cascade ========================================================================
 //  Auto-fetch full text from PubMed Central when freely available ========================================================================
-// Pipeline: DOI/PMID -> PMCID lookup -> PMC efetch XML -> clean body text
-// Legal, free, and within NCBI E-utilities terms of service.
+// Pipeline: Europe PMC full text API (CORS-permissive, browser-safe)
+// Europe PMC mirrors PMC content with proper CORS headers for browser access.
+// Legal, free, within Europe PMC terms of service.
 async function fetchPMCFullText(doi, pmid) {
-  // NCBI eutils blocks CORS from file:// origins — only works when hosted on a web server
   if (window.location.protocol === 'file:') {
-    console.log('[BioSignal] PMC auto-fetch skipped: running from file:// (CORS restriction). Upload PDF for full text.');
     return null;
   }
   try {
-    // Step 1: Get PMCID via PubMed esummary (CORS-safe, same domain as other eutils calls)
-    // esummary returns articleids array which includes the PMC ID when available
-    var searchPmid = pmid;
-    if (!searchPmid && doi) {
-      // Look up PMID from DOI via esearch
-      var esearchUrl = 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term='
-        + encodeURIComponent(doi + '[DOI]') + '&retmode=json&retmax=1';
-      var esearchRes = await fetch(esearchUrl);
-      if (!esearchRes.ok) return null;
-      var esearchData = await esearchRes.json();
-      searchPmid = (esearchData.esearchresult.idlist || [])[0];
-      if (!searchPmid) return null;
-    }
+    // Step 1: Find the article in Europe PMC by PMID or DOI
+    var query = pmid ? 'EXT_ID:' + pmid + '%20AND%20SRC:MED'
+                     : 'DOI:' + encodeURIComponent(doi);
+    var searchUrl = 'https://www.ebi.ac.uk/europepmc/webservices/rest/search?query='
+      + query + '&resulttype=core&format=json&pageSize=1';
+    var searchRes = await fetch(searchUrl);
+    if (!searchRes.ok) { return null; }
+    var searchData = await searchRes.json();
+    var results = searchData.resultList && searchData.resultList.result;
+    if (!results || !results.length) { return null; }
 
-    // Use esummary to get article IDs including PMCID
-    var summaryUrl = 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=pubmed&id='
-      + searchPmid + '&retmode=json';
-    console.log('[BioSignal] PMC lookup via esummary:', summaryUrl);
-    var summaryRes = await fetch(summaryUrl);
-    if (!summaryRes.ok) return null;
-    var summaryData = await summaryRes.json();
-    var result = summaryData.result && summaryData.result[searchPmid];
-    if (!result) return null;
+    var article = results[0];
+    var pmcid = article.pmcid;
+    if (!pmcid) { return null; }
 
-    // Extract PMCID from articleids array
-    var articleIds = result.articleids || [];
-    var pmcEntry = articleIds.find(function(a) { return a.idtype === 'pmc'; });
-    var pmcid = pmcEntry && pmcEntry.value;
-    console.log('[BioSignal] PMCID from esummary:', pmcid);
-    if (!pmcid) return null;
-
-    // Step 2: Fetch full text XML from PMC efetch (CORS-safe, same eutils domain)
-    var pmcNum = pmcid.replace('PMC', '');
-    var fetchUrl = 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pmc&id='
-      + pmcNum + '&rettype=xml&retmode=xml';
-    console.log('[BioSignal] Fetching PMC full text:', fetchUrl);
+    // Step 2: Fetch full text XML from Europe PMC
+    var fetchUrl = 'https://www.ebi.ac.uk/europepmc/webservices/rest/' + pmcid + '/fullTextXML';
     var fetchRes = await fetch(fetchUrl);
-    if (!fetchRes.ok) { console.log('[BioSignal] PMC efetch failed:', fetchRes.status); return null; }
+    if (!fetchRes.ok) { return null; }
     var xmlText = await fetchRes.text();
-    console.log('[BioSignal] PMC XML length:', xmlText.length);
 
     // Step 3: Extract body text from JATS XML
-    // Strip non-body sections
     xmlText = xmlText
       .replace(/<front>[\s\S]*?<\/front>/gi, '')
       .replace(/<back>[\s\S]*?<\/back>/gi, '')
       .replace(/<ref-list[\s\S]*?<\/ref-list>/gi, '')
       .replace(/<table-wrap[\s\S]*?<\/table-wrap>/gi, '')
       .replace(/<fig[\s\S]*?<\/fig>/gi, '')
-      .replace(/<supplementary-material[\s\S]*?<\/supplementary-material>/gi, '')
-      // Strip author manuscript watermark tags
-      .replace(/<watermark[\s\S]*?<\/watermark>/gi, '')
-      .replace(/Author Manuscript/gi, '');
+      .replace(/<supplementary-material[\s\S]*?<\/supplementary-material>/gi, '');
 
     var tmp = document.createElement('div');
     tmp.innerHTML = xmlText;
     var bodyText = (tmp.textContent || tmp.innerText || '')
       .replace(/\s+/g, ' ')
       .replace(/\[\d+\]/g, '')
-      // Remove repeated "Author Manuscript" watermark text
-      .replace(/Author Manuscript/gi, '')
       .trim();
 
-    console.log('[BioSignal] Extracted body text length:', bodyText.length);
-    // Lower threshold - author manuscripts may have less extractable text
-    if (bodyText.length < 200) return null;
+    if (bodyText.length < 200) { return null; }
     return bodyText;
 
   } catch(e) {
-    console.log('[BioSignal] PMC fetch error:', e.message);
     return null;
   }
 }
@@ -5253,7 +5223,6 @@ Be scientifically precise. Cite the provided paper as the primary source in rele
 
 //  Show confirmation modal -- returns Promise<boolean> ========================================================================
 function showPaperConfirmation(meta, abstract, fullText) {
-  console.log('[BioSignal] showPaperConfirmation called, fullText length:', fullText ? fullText.length : 0);
   return new Promise(function(resolve) {
     const modal = document.getElementById('paper-confirm-modal');
     document.getElementById('pconf-title').textContent = meta.title || '(No title found)';
@@ -5277,9 +5246,7 @@ function showPaperConfirmation(meta, abstract, fullText) {
       } else {
         var isFileUrl = window.location.protocol === 'file:';
         badge.style.cssText = 'display:block;margin:-28px -30px 20px;padding:8px 16px;border-radius:12px 12px 0 0;background:#D97706;font-family:\'DM Mono\',monospace;font-size:10px;color:#fff;line-height:1.5;font-weight:500;';
-        badge.textContent = isFileUrl
-          ? '⚠ Abstract only -- PMC auto-fetch requires a hosted server. Upload the PDF above for a richer cascade.'
-          : '⚠ Abstract only -- full text not in PubMed Central. Upload the PDF above if you have access.';
+        badge.textContent = '⚠ Abstract only -- automatic full text retrieval may be blocked by browser security policy (CORS). Upload the PDF above for a complete analysis if you have access to the paper.';
       }
     }
 
@@ -5420,7 +5387,6 @@ async function generateFromDOI() {
 
     // Diagnostic: verify source_confidence field is present
     if (aiParsed.steps[0]) {
-      console.log('[BioSignal] Step 0 source_confidence:', aiParsed.steps[0].source_confidence, '| all fields:', Object.keys(aiParsed.steps[0]).join(', '));
     }
 
     aiParsed._paperMeta = paperMeta;
