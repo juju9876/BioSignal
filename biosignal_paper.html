@@ -4960,7 +4960,13 @@ function resolveInput(raw) {
 //  Fetch DOI from PubMed ID ========================================================================
 async function doiFromPMID(pmid) {
   const url = 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=pubmed&id=' + pmid + '&retmode=json';
-  const res = await fetch(url);
+  let res;
+  try {
+    res = await fetch(url);
+  } catch(e) {
+    // iOS Safari blocks PubMed eutils due to CORS — suggest DOI as alternative
+    throw new Error('Could not reach PubMed on this device (browser security policy). Please enter the paper\'s DOI instead of the PMID — e.g. 10.1056/NEJMoa2307563');
+  }
   if (!res.ok) throw new Error('PubMed lookup failed for PMID ' + pmid);
   const data = await res.json();
   const rec = data.result && data.result[pmid];
@@ -4968,7 +4974,6 @@ async function doiFromPMID(pmid) {
   // Extract DOI from articleids
   const doiId = (rec.articleids || []).find(function(a) { return a.idtype === 'doi'; });
   if (doiId && doiId.value) return doiId.value;
-  // Fallback: construct DOI search via Crossref
   return null;
 }
 
@@ -4993,7 +4998,7 @@ async function doiFromCitation(citation) {
 //  Fetch paper metadata from Crossref ========================================================================
 async function fetchCrossref(doi) {
   const url = 'https://api.crossref.org/works/' + encodeURIComponent(doi);
-  const res = await fetch(url, { headers: { 'User-Agent': 'BioSignal/2.0 (biosignal.app; mailto:info@biosignal.app)' } });
+  const res = await fetch(url);
   if (!res.ok) throw new Error('DOI not found in Crossref. Check the DOI is correct.');
   const data = await res.json();
   const w = data.message;
@@ -5018,7 +5023,12 @@ async function fetchPubMedAbstract(doi) {
     // Search PubMed for this DOI
     const searchUrl = 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term=' +
       encodeURIComponent(doi + '[DOI]') + '&retmode=json&retmax=1';
-    const searchRes = await fetch(searchUrl);
+    let searchRes;
+    try {
+      searchRes = await fetch(searchUrl);
+    } catch(e) {
+      return null; // iOS Safari CORS block — silent fallback, Crossref abstract used instead
+    }
     if (!searchRes.ok) return null;
     const searchData = await searchRes.json();
     const pmid = (searchData.esearchresult.idlist || [])[0];
@@ -5026,7 +5036,12 @@ async function fetchPubMedAbstract(doi) {
 
     // Fetch abstract
     const fetchUrl = 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=' + pmid + '&retmode=text&rettype=abstract';
-    const fetchRes = await fetch(fetchUrl);
+    let fetchRes;
+    try {
+      fetchRes = await fetch(fetchUrl);
+    } catch(e) {
+      return null; // iOS Safari CORS block — silent fallback
+    }
     if (!fetchRes.ok) return null;
     const text = await fetchRes.text();
     // Strip PMID header, return just the abstract portion
@@ -6808,6 +6823,8 @@ updateUI = function(panelId) {
       style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text-3);background:none;border:none;cursor:pointer;text-decoration:underline;padding:0;">
       About &amp; Disclaimer
     </button>
+    &mdash; Send comments and feedback to <a href="mailto:carlos.chan.evangelista@gmail.com"
+      style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text-3);">carlos.chan.evangelista@gmail.com</a>
   </span>
 </footer>
 
