@@ -277,6 +277,89 @@ header {
 
 #doi-error { display:none; font-size:12px; color:#C0392B; padding:8px 12px; background:#FEF2F2; border:1px solid #FECACA; border-radius:var(--r-sm); margin-top:8px; }
 
+
+/* ── Papers in the Headlines ── */
+#headlines-section { margin-top:14px; }
+#headlines-toggle-btn {
+  display:flex; align-items:center; gap:8px;
+  font-family:var(--font-m); font-size:11px; font-weight:500;
+  padding:7px 14px; border-radius:100px; cursor:pointer;
+  background:linear-gradient(135deg,#1A2A5E 0%,#1A5FAF 100%);
+  color:#fff; border:none; transition:opacity 0.15s; width:100%;
+  justify-content:center;
+}
+#headlines-toggle-btn:hover { opacity:0.88; }
+#headlines-panel {
+  display:none; margin-top:10px;
+  border:1px solid var(--border-mid); border-radius:10px;
+  background:var(--bg-card); overflow:hidden;
+}
+#headlines-controls {
+  padding:12px 14px; border-bottom:1px solid var(--border);
+  display:flex; flex-wrap:wrap; gap:10px; align-items:flex-end;
+}
+.hl-group { display:flex; flex-direction:column; gap:4px; }
+.hl-label { font-family:var(--font-m); font-size:9.5px; letter-spacing:0.07em; text-transform:uppercase; color:var(--text-3); }
+.hl-checkboxes { display:flex; flex-wrap:wrap; gap:6px; }
+.hl-cb-wrap {
+  display:flex; align-items:center; gap:4px;
+  font-family:var(--font-m); font-size:10.5px; color:var(--text-2);
+  background:var(--bg-subtle); border:1px solid var(--border);
+  border-radius:100px; padding:3px 9px; cursor:pointer;
+  transition:all 0.12s; user-select:none;
+}
+.hl-cb-wrap:has(input:checked) { background:#EEF4FE; border-color:#1A5FAF; color:#1A5FAF; }
+.hl-cb-wrap input { display:none; }
+#hl-topic-input {
+  font-family:var(--font-m); font-size:11px; padding:5px 9px;
+  border:1px solid var(--border-mid); border-radius:6px;
+  background:var(--bg-input); color:var(--text-1); width:180px;
+}
+#hl-count-select {
+  font-family:var(--font-m); font-size:11px; padding:5px 9px;
+  border:1px solid var(--border-mid); border-radius:6px;
+  background:var(--bg-input); color:var(--text-1);
+}
+#hl-search-btn {
+  font-family:var(--font-m); font-size:11px; font-weight:500;
+  padding:6px 16px; border-radius:100px; cursor:pointer;
+  background:#1A5FAF; color:#fff; border:none; transition:opacity 0.15s;
+  white-space:nowrap; align-self:flex-end;
+}
+#hl-search-btn:hover { opacity:0.85; }
+#hl-search-btn:disabled { opacity:0.5; cursor:not-allowed; }
+#headlines-results { padding:0; }
+.hl-result-item {
+  padding:11px 14px; border-bottom:1px solid var(--border);
+  cursor:pointer; transition:background 0.1s;
+}
+.hl-result-item:last-child { border-bottom:none; }
+.hl-result-item:hover { background:var(--bg-hover); }
+.hl-result-title {
+  font-family:var(--font-m); font-size:11.5px; font-weight:600;
+  color:var(--text-1); margin-bottom:3px; line-height:1.4;
+}
+.hl-result-meta {
+  font-family:var(--font-m); font-size:10px; color:var(--text-3);
+  margin-bottom:4px;
+}
+.hl-result-why {
+  font-family:var(--font-m); font-size:10.5px; color:var(--text-2);
+  line-height:1.5; margin-bottom:5px;
+}
+.hl-result-tags { display:flex; flex-wrap:wrap; gap:4px; }
+.hl-tag {
+  font-family:var(--font-m); font-size:9px; padding:2px 7px;
+  border-radius:100px; background:#E6F2EC; color:#1A5C3A; border:1px solid #9FE1CB;
+}
+.hl-tag.news { background:#FEF3C7; color:#92400E; border-color:#FAC775; }
+.hl-tag.citations { background:#EEF4FE; color:#1A5FAF; border-color:#B3CFF0; }
+.hl-tag.trending { background:#FAECE7; color:#712B13; border-color:#F0997B; }
+#hl-status {
+  padding:14px; font-family:var(--font-m); font-size:11px;
+  color:var(--text-3); text-align:center; display:none;
+}
+
 .doi-chips-label { font-size:10px; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-3); margin:14px 0 7px; }
 .doi-example-chips { display:flex; flex-wrap:wrap; gap:6px; }
 .doi-chip {
@@ -554,6 +637,45 @@ header {
           style="display:none;background:none;border:none;font-size:14px;cursor:pointer;color:var(--text-3);padding:2px 6px;">✕</button>
       </div>
       <input id="pdf-file-input" type="file" accept=".pdf" style="display:none" onchange="handlePDFUpload(this)"/>
+
+
+      <!-- Papers in the Headlines -->
+      <div id="headlines-section">
+        <button id="headlines-toggle-btn" onclick="toggleHeadlines()">
+          <span>📰</span>
+          <span>Papers in the headlines</span>
+          <span id="hl-chevron" style="margin-left:4px;transition:transform 0.2s;">▾</span>
+        </button>
+        <div id="headlines-panel">
+          <div id="headlines-controls">
+            <div class="hl-group">
+              <div class="hl-label">Criteria</div>
+              <div class="hl-checkboxes">
+                <label class="hl-cb-wrap"><input type="checkbox" id="hl-cb-news" checked> 📰 News coverage</label>
+                <label class="hl-cb-wrap"><input type="checkbox" id="hl-cb-altmetric" checked> 📊 Altmetric attention</label>
+                <label class="hl-cb-wrap"><input type="checkbox" id="hl-cb-trending"> 🔥 Trending / recent</label>
+                <label class="hl-cb-wrap"><input type="checkbox" id="hl-cb-citations"> 🏆 High citations</label>
+                <label class="hl-cb-wrap"><input type="checkbox" id="hl-cb-expert"> 🔬 Expert reviews</label>
+              </div>
+            </div>
+            <div class="hl-group">
+              <div class="hl-label">Topic (optional)</div>
+              <input id="hl-topic-input" type="text" placeholder="e.g. cancer, aging, diabetes…"/>
+            </div>
+            <div class="hl-group">
+              <div class="hl-label">Results</div>
+              <select id="hl-count-select">
+                <option value="5">5 papers</option>
+                <option value="8" selected>8 papers</option>
+                <option value="12">12 papers</option>
+              </select>
+            </div>
+            <button id="hl-search-btn" onclick="searchHeadlines()">Search</button>
+          </div>
+          <div id="hl-status"></div>
+          <div id="headlines-results"></div>
+        </div>
+      </div>
 
       <!-- Paper metadata preview card (shown after fetch) -->
       <div class="paper-meta-card" id="paper-meta-card">
@@ -2960,22 +3082,42 @@ Return ONLY valid JSON, no markdown, no explanation. Schema:
 
 For each step include 2-3 real, verifiable sources -- use format "First Author et al., Journal Abbrev Year" (e.g. "Semenza, Nat Rev Cancer 2003"). Only cite real published work. Generate 6-8 steps progressing from initial detection through molecular mechanisms to systemic consequences and resolution/treatment. Be scientifically precise.`;
 
+// ── Anthropic API fetch with automatic retry on 429 / 529 ────────────────────
+// Retries up to maxRetries times with exponential backoff.
+// statusCb(msg) is called with a user-visible status string on each retry.
+async function anthropicFetchWithRetry(fetchFn, statusCb, maxRetries) {
+  maxRetries = maxRetries || 3;
+  var delay = 8000; // start at 8s
+  for (var attempt = 0; attempt <= maxRetries; attempt++) {
+    var response = await fetchFn();
+    if (response.status !== 429 && response.status !== 529) return response;
+    if (attempt === maxRetries) return response; // let caller handle final failure
+    var waitSec = Math.round(delay / 1000);
+    if (statusCb) statusCb('API busy — retrying in ' + waitSec + 's\u2026 (attempt ' + (attempt + 1) + '/' + maxRetries + ')');
+    await new Promise(function(r) { setTimeout(r, delay); });
+    delay = Math.min(delay * 2, 30000); // cap at 30s
+  }
+  return response;
+}
+
 async function fetchAICascade(stimulus, apiKey) {
-  const response = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': apiKey,
-      'anthropic-version': '2023-06-01',
-      'anthropic-dangerous-direct-browser-access': 'true'
-    },
-    body: JSON.stringify({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 4096,
-      system: AI_SYSTEM,
-      messages: [{ role: 'user', content: 'Generate cascade for: ' + stimulus }]
-    })
-  });
+  const response = await anthropicFetchWithRetry(function() {
+    return fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 4096,
+        system: AI_SYSTEM,
+        messages: [{ role: 'user', content: 'Generate cascade for: ' + stimulus }]
+      })
+    });
+  }, function(msg) { updateLoadingStep(msg); });
 
   if (!response.ok) {
     const err = await response.json().catch(() => ({}));
@@ -5052,6 +5194,151 @@ async function fetchPubMedAbstract(doi) {
   }
 }
 
+// ── Papers in the Headlines ──────────────────────────────────────────────────
+var HL_OPEN = false;
+
+function toggleHeadlines() {
+  HL_OPEN = !HL_OPEN;
+  document.getElementById('headlines-panel').style.display = HL_OPEN ? 'block' : 'none';
+  document.getElementById('hl-chevron').style.transform = HL_OPEN ? 'rotate(180deg)' : '';
+}
+
+async function searchHeadlines() {
+  var apiKey = getApiKey();
+  if (!apiKey) { showApiKeyPrompt(function() { searchHeadlines(); }); return; }
+
+  var criteria = [];
+  if (document.getElementById('hl-cb-news').checked)      criteria.push('news media coverage and public attention');
+  if (document.getElementById('hl-cb-altmetric').checked)  criteria.push('high Altmetric scores and social media attention');
+  if (document.getElementById('hl-cb-trending').checked)   criteria.push('trending in PubMed or preprint servers in the last 30 days');
+  if (document.getElementById('hl-cb-citations').checked)  criteria.push('high citation rates for recently published papers');
+  if (document.getElementById('hl-cb-expert').checked)     criteria.push('featured in expert reviews or editorials');
+  if (criteria.length === 0) criteria.push('news media coverage and high public attention');
+
+  var topic    = document.getElementById('hl-topic-input').value.trim();
+  var count    = parseInt(document.getElementById('hl-count-select').value);
+  var btn      = document.getElementById('hl-search-btn');
+  var status   = document.getElementById('hl-status');
+  var results  = document.getElementById('headlines-results');
+
+  btn.disabled = true; btn.textContent = 'Searching\u2026';
+  status.style.display = 'block';
+  status.textContent = '\uD83D\uDD0D Searching for newsworthy biomedical papers\u2026';
+  results.innerHTML = '';
+
+  var topicClause  = topic ? ' in ' + topic : '';
+  var criteriaText = criteria.join(', ');
+
+  // Keep prompt short to stay within token limits
+  // Criteria are advisory signals, not strict gates — Claude should return papers
+  // that match any of the criteria, using web search to find recent attention signals
+  var prompt = 'Search for ' + count + ' recent biomedical research papers' + topicClause + ' that are getting public or scientific attention. ' +
+    'Use these as search signals (any match is sufficient): ' + criteriaText + '. ' +
+    'Papers should be published in 2024 or 2025. Find real papers with verifiable PMIDs or DOIs. ' +
+    'If exact Altmetric scores are unavailable, use news mentions, social media coverage, or editorials as proxies. ' +
+    'Always return papers even if only partial criteria are met. ' +
+    'Return JSON only, no markdown:\n' +
+    '{"papers":[{"title":"...","authors":"First Author et al.","journal":"...","year":"2025",' +
+    '"identifier":"PMID or DOI","identifier_type":"pmid or doi",' +
+    '"why_newsworthy":"1-2 sentences","criteria_matched":["news coverage"],"citation_note":""}],' +
+    '"criteria_used":"' + criteriaText.slice(0, 80) + '"}';
+
+  try {
+    var resp = await anthropicFetchWithRetry(function() {
+      return fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': apiKey,
+          'anthropic-version': '2023-06-01',
+          'anthropic-dangerous-direct-browser-access': 'true'
+        },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: 2000,
+          tools: [{ type: 'web_search_20250305', name: 'web_search', max_uses: 3 }],
+          messages: [{ role: 'user', content: prompt }]
+        })
+      });
+    }, function(msg) { status.textContent = '\uD83D\uDD0D ' + msg; });
+
+    if (!resp.ok) {
+      var err = await resp.json().catch(function() { return {}; });
+      throw new Error((err.error && err.error.message) ? err.error.message : 'API error ' + resp.status);
+    }
+
+    var data = await resp.json();
+
+    // Collect all text blocks (tool_use / tool_result blocks are skipped)
+    var textContent = (data.content || [])
+      .filter(function(b) { return b.type === 'text'; })
+      .map(function(b) { return b.text; })
+      .join('');
+
+    // Strip any accidental markdown fences, find JSON
+    var clean = textContent.replace(/```json|```/g, '').trim();
+    var jStart = clean.indexOf('{');
+    var jEnd   = clean.lastIndexOf('}');
+    if (jStart === -1 || jEnd === -1) throw new Error('No JSON in response');
+    var parsed = JSON.parse(clean.slice(jStart, jEnd + 1));
+    var papers = parsed.papers || [];
+
+    if (papers.length === 0) {
+      status.textContent = 'No papers found. Try different criteria or a broader topic.';
+      btn.disabled = false; btn.textContent = 'Search'; return;
+    }
+
+    status.style.display = 'none';
+    results.innerHTML = '';
+
+    // Criteria header
+    var hdr = document.createElement('div');
+    hdr.style.cssText = 'padding:8px 14px;font-family:var(--font-m);font-size:9.5px;color:var(--text-3);border-bottom:1px solid var(--border);background:var(--bg-subtle);';
+    hdr.textContent = 'Criteria: ' + (parsed.criteria_used || criteriaText).slice(0, 120) +
+      (topic ? ' \u00B7 Topic: ' + topic : '') + ' \u00B7 Click a paper to load it';
+    results.appendChild(hdr);
+
+    papers.forEach(function(paper) {
+      var item = document.createElement('div');
+      item.className = 'hl-result-item';
+      var id = (paper.identifier || '').trim();
+
+      item.onclick = function() {
+        document.getElementById('doi-input').value = id;
+        document.getElementById('doi-input').focus();
+        toggleHeadlines();
+      };
+
+      var tags = (paper.criteria_matched || []).map(function(c) {
+        var cls = c.includes('news') ? 'news' : c.includes('cit') ? 'citations' : 'trending';
+        return '<span class="hl-tag ' + cls + '">' + hlEscape(c) + '</span>';
+      }).join('');
+      if (paper.citation_note) tags += '<span class="hl-tag citations">' + hlEscape(paper.citation_note) + '</span>';
+
+      item.innerHTML =
+        '<div class="hl-result-title">'  + hlEscape(paper.title  || '') + '</div>' +
+        '<div class="hl-result-meta">'   + hlEscape(paper.authors || '') + ' \u00B7 ' +
+          hlEscape(paper.journal || '') + ' ' + hlEscape(paper.year || '') +
+          (id ? ' \u00B7 <span style="color:#1A5FAF;font-weight:600;">' + hlEscape(id) + '</span>' : '') +
+        '</div>' +
+        '<div class="hl-result-why">'    + hlEscape(paper.why_newsworthy || '') + '</div>' +
+        (tags ? '<div class="hl-result-tags">' + tags + '</div>' : '');
+
+      results.appendChild(item);
+    });
+
+  } catch(e) {
+    status.style.display = 'block';
+    status.textContent = '\u26A0 Search failed: ' + (e.message || 'Unknown error') + '. Check your API key and try again.';
+  }
+
+  btn.disabled = false; btn.textContent = 'Search';
+}
+
+function hlEscape(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
 //  Loading steps for DOI mode ========================================================================
 const DOI_LOADING_MSGS = [
   'Fetching paper metadata...',
@@ -5370,20 +5657,22 @@ async function generateFromDOI() {
     startDOILoading(paperMeta.title.slice(0, 50) + '...');
 
     const userPrompt = buildPaperPrompt(paperMeta, abstract, PDF_STATE.text || pmcFullText);
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-direct-browser-access': 'true'
-      },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 8000,
-        messages: [{ role: 'user', content: userPrompt }]
-      })
-    });
+    const response = await anthropicFetchWithRetry(function() {
+      return fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': apiKey,
+          'anthropic-version': '2023-06-01',
+          'anthropic-dangerous-direct-browser-access': 'true'
+        },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: 8000,
+          messages: [{ role: 'user', content: userPrompt }]
+        })
+      });
+    }, function(msg) { updateLoadingStep(msg); });
 
     if (!response.ok) {
       const err = await response.json().catch(function() { return {}; });
@@ -6580,20 +6869,22 @@ async function generateNarrationScript(cascade, step, stepIndex) {
   }
 
   try {
-    var res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-direct-browser-access': 'true'
-      },
-      body: JSON.stringify({
-        model: 'claude-haiku-4-5-20251001',
-        max_tokens: 300,
-        messages: [{ role: 'user', content: prompt }]
-      })
-    });
+    var res = await anthropicFetchWithRetry(function() {
+      return fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': apiKey,
+          'anthropic-version': '2023-06-01',
+          'anthropic-dangerous-direct-browser-access': 'true'
+        },
+        body: JSON.stringify({
+          model: 'claude-haiku-4-5-20251001',
+          max_tokens: 300,
+          messages: [{ role: 'user', content: prompt }]
+        })
+      });
+    }, null);
     if (!res.ok) return null;
     var data = await res.json();
     var script = data.content[0].text.trim();
