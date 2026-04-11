@@ -6667,10 +6667,14 @@ function resolveVoice() {
   if (NARRATION.voice) return NARRATION.voice;  // already locked
   var voices = window.speechSynthesis ? window.speechSynthesis.getVoices() : [];
   if (!voices.length) return null;  // not ready yet -- onvoiceschanged will retry
+  // Prefer Aria (Windows/Edge neural) and Alex (Apple) as primary voices
   var preferred = [
+    'Microsoft Aria Online (Natural) - English (United States)',
+    'Microsoft Aria - English (United States)',
+    'Alex',
     'Microsoft David Desktop', 'Microsoft Mark Desktop', 'Microsoft Zira Desktop',
     'Google US English',
-    'Alex', 'Samantha', 'Fred',
+    'Samantha', 'Fred',
     'Google UK English Male', 'Google UK English Female',
     'Daniel', 'Karen', 'Moira'
   ];
