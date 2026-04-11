@@ -787,9 +787,18 @@ header {
           <svg width="14" height="14" viewBox="0 0 14 14"><path d="M5 2l5 5-5 5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" fill="none"/></svg>
         </button>
         <div class="progress-track"><div class="progress-fill" id="prog-A"></div></div>
-        <button class="mode-btn" id="audio-btn" onclick="toggleNarration()" title="Toggle audio narration (professor voice)" style="white-space:nowrap;font-size:13px;padding:5px 11px;letter-spacing:0.02em;" aria-label="Toggle narration">
+        <button class="mode-btn" id="audio-btn" onclick="toggleNarration()" title="Toggle audio narration" style="white-space:nowrap;font-size:13px;padding:5px 11px;letter-spacing:0.02em;" aria-label="Toggle narration">
           🔊 <span id="audio-btn-label" style="font-size:11px;">Narrate</span>
         </button>
+        <select id="narration-tone" title="Narration audience level"
+          onchange="onToneChange()"
+          style="font-family:var(--font-m);font-size:10.5px;padding:4px 6px;border:1px solid var(--border-mid);border-radius:6px;background:var(--bg-input);color:var(--text-2);cursor:pointer;max-width:160px;">
+          <option value="expert">🎓 Expert audience</option>
+          <option value="graduate">🔬 Graduate / postdoc</option>
+          <option value="medical_student">🩺 Medical student</option>
+          <option value="undergraduate">📚 Undergraduate</option>
+          <option value="public">🌍 General public</option>
+        </select>
         <button class="mode-btn" id="trace-replay-btn" onclick="replayTrace()" title="Replay signal trace" style="display:none;white-space:nowrap;font-size:11px;padding:5px 10px;border-color:#D97706;color:#92400E;background:#FFFBEB;">
           ↺ Trace
         </button>
@@ -5197,6 +5206,70 @@ async function fetchPubMedAbstract(doi) {
 // ── Papers in the Headlines ──────────────────────────────────────────────────
 var HL_OPEN = false;
 
+// ── Narration tone profiles ───────────────────────────────────────────────────
+var NARRATION_TONES = {
+  expert: {
+    label: 'Expert audience',
+    summary: 'You are an expert scientist presenting to a specialist audience of researchers and clinicians. '
+      + 'Use precise technical vocabulary without explanation. Assume full familiarity with the biological mechanisms, '
+      + 'statistical methods, and clinical context. Focus on nuance, novel aspects, and implications for the field.',
+    step:   'You are an expert scientist presenting to a specialist audience. '
+      + 'Explain this cascade step in 2-3 spoken sentences using precise technical language. '
+      + 'Assume deep familiarity with the biology. Highlight mechanistic nuance and significance.'
+  },
+  graduate: {
+    label: 'Graduate / postdoc',
+    summary: 'You are a senior scientist or PI presenting to graduate students and postdoctoral fellows. '
+      + 'Use technical vocabulary but briefly contextualise less familiar concepts. '
+      + 'Highlight the experimental design, key mechanistic insight, and broader research implications.',
+    step:   'You are a senior scientist presenting to graduate students and postdocs. '
+      + 'Explain this cascade step in 2-3 spoken sentences. Use technical language, briefly explain '
+      + 'any specialised terms, and connect the step to the broader research question.'
+  },
+  medical_student: {
+    label: 'Medical student',
+    summary: 'You are an attending physician presenting to medical students. '
+      + 'Connect the biology to clinical relevance and patient care. '
+      + 'Explain mechanistic terms when introduced. Emphasise what this means for diagnosis, treatment, or outcomes.',
+    step:   'You are an attending physician presenting to medical students. '
+      + 'Explain this cascade step in 2-3 spoken sentences. Connect the biology to clinical practice, '
+      + 'explain any technical terms clearly, and highlight what this means for patient care.'
+  },
+  undergraduate: {
+    label: 'Undergraduate',
+    summary: 'You are a professor delivering an accessible lecture to undergraduate biology students. '
+      + 'Use clear, engaging language. Explain technical terms as you introduce them. '
+      + 'Build from familiar concepts to the paper\'s findings with enthusiasm and clarity.',
+    step:   'You are a professor delivering a concise lecture to undergraduate biology students. '
+      + 'Explain this step of a biological cascade in 2 to 3 spoken sentences. '
+      + 'Use accessible language, explain any technical terms, and connect it to the overall cascade.'
+  },
+  public: {
+    label: 'General public',
+    summary: 'You are a science communicator explaining exciting research to a curious general audience with no assumed biology background. '
+      + 'Use everyday language, vivid analogies, and relatable comparisons. '
+      + 'Make the science compelling and relevant to everyday life without oversimplifying the significance of the findings.',
+    step:   'You are a science communicator explaining research to a curious general audience. '
+      + 'Explain this step in 2-3 sentences using everyday language and helpful analogies. '
+      + 'Avoid jargon or define any technical terms in plain English. Make it engaging and relevant.'
+  }
+};
+
+function getNarrationTone() {
+  var sel = document.getElementById('narration-tone');
+  var key = sel ? sel.value : 'undergraduate';
+  return NARRATION_TONES[key] || NARRATION_TONES.undergraduate;
+}
+
+function onToneChange() {
+  // Clear the narration script cache so new scripts are generated with the new tone
+  NARRATION.scriptCache = {};
+  // If currently narrating, stop
+  if (window.speechSynthesis) window.speechSynthesis.cancel();
+}
+
+
+
 function toggleHeadlines() {
   HL_OPEN = !HL_OPEN;
   document.getElementById('headlines-panel').style.display = HL_OPEN ? 'block' : 'none';
@@ -6852,7 +6925,8 @@ async function generateNarrationScript(cascade, step, stepIndex) {
         + (journalYear ? ', published in ' + journalYear : '') + '.'
       : '';
 
-    prompt = 'You are a professor delivering a concise lecture to undergraduate biology students. '
+    var tone = getNarrationTone();
+    prompt = tone.summary + ' '
       + 'Begin with this exact sentence (do not alter it): "' + attribution + '" '
       + 'Then continue in 3 to 4 more spoken sentences introducing the paper. '
       + 'Flowing prose only, no bullet points. '
@@ -6872,8 +6946,8 @@ async function generateNarrationScript(cascade, step, stepIndex) {
         + 'the original paper for the full detail."'
       : '';
 
-    prompt = 'You are a professor delivering a concise lecture to undergraduate biology students. '
-      + 'Explain this step of a biological cascade in 2 to 3 spoken sentences. '
+    var tone = getNarrationTone();
+    prompt = tone.step + ' '
       + 'Flowing prose, no bullet points. Connect it to the overall cascade. '
       + closingInstruction + '\n\n'
       + 'Cascade: ' + cascade.name + '\n'
