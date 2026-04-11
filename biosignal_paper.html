@@ -5450,13 +5450,25 @@ function buildPaperPrompt(paperMeta, abstract, fullText) {
   const paperContent = fullText
     ? 'Full paper text (extracted from PDF -- use this for detailed analysis):\n' + fullText.slice(0, 12000)
     : 'Abstract:\n' + abstractText;
-  return `You are an expert biomedical scientist. A user has provided a published scientific paper. Your task is to:
+  return `You are an expert biomedical scientist and science communicator. A user has provided a published scientific paper. Your task is to:
 
 1. Identify the independent variable(s) (IV) -- what the researchers manipulated or studied as the cause/intervention.
 2. Identify the dependent variable(s) (DV) -- the key measured outcomes/findings.
-3. Generate a detailed multi-scale biological cascade in JSON that traces the pathway FROM the IV stimulus THROUGH molecular -> cellular -> tissue -> organ -> organismal levels TO the DV findings.
+3. Determine the paper type and generate an appropriate cascade accordingly.
 
-The cascade must explicitly connect to this paper's actual findings. The final steps should name the specific outcome metrics reported in the paper.
+IMPORTANT -- Determine the paper type FIRST, then build the cascade to match:
+
+A) MECHANISTIC / PHARMACOLOGICAL papers (drug trials, molecular interventions, physiology studies): generate a biological cascade progressing stimulus -> molecular -> cellular -> tissue -> organ -> organismal -> outcome. These are the classic BioSignal cascades.
+
+B) CLINICAL DECISION / DIAGNOSTIC ACCURACY / PREDICTION RULE papers (e.g. clinical prediction tools, CT decision rules, diagnostic criteria validation, screening studies): generate a CLINICAL cascade tracing the real-world pathway from patient presentation through clinical assessment to diagnostic decision and patient outcome. Use stages: presentation -> assessment -> decision rule application -> clinical decision -> intervention -> patient outcome. Focus on the clinical and epidemiological chain. Do NOT invent molecular biology that the paper does not study.
+
+C) EPIDEMIOLOGICAL / OBSERVATIONAL papers (cohort studies, surveys, registries with a non-pharmacological exposure): generate a cascade tracing exposure -> biological consequence -> health outcome. Include plausible biological mechanisms, clearly labelled pathway-inferred.
+
+D) QUALITY IMPROVEMENT / HEALTH SYSTEMS papers (care pathways, workflow studies, policy evaluations): trace system intervention -> care process change -> provider behaviour -> patient safety -> outcome.
+
+Adapt the step "stage" labels to match the paper type. For type B use stages like "patient presentation", "clinical assessment", "decision rule", "clinical decision", "intervention", "patient outcome". For type C use "exposure", "biological mechanism", "physiological effect", "population outcome". NEVER describe what happens in a physician's mind or cognitive process -- always focus on the biological, clinical, or epidemiological subject of the study itself.
+
+The cascade must explicitly connect to this paper's actual findings. The final steps must name the specific outcome metrics reported.
 
 Paper details:
 Title: ${paperMeta.title}
@@ -5501,7 +5513,7 @@ Return ONLY valid JSON, no markdown, no explanation. Schema:
   "steps": [
     {
       "title": "Step title (max 8 words)",
-      "stage": "stimulus|molecular|cellular|tissue|organ|organismal|outcome",
+      "stage": "For mechanistic papers: stimulus|molecular|cellular|tissue|organ|organismal|outcome. For clinical/diagnostic papers: patient presentation|clinical assessment|decision rule|clinical decision|intervention|patient outcome. For epidemiological papers: exposure|biological mechanism|physiological effect|population outcome. Choose the most appropriate label.",
       "source_confidence": "paper-cited|pathway-inferred|extrapolated",
       "severity": "normal|warning|danger",
       "desc": "2-3 sentence mechanistic description. Ground in the paper's context.",
@@ -5513,8 +5525,10 @@ Return ONLY valid JSON, no markdown, no explanation. Schema:
   ]
 }
 
-Generate 7-9 steps. The FIRST step must describe the stimulus/IV at the whole-body or system level.
-Subsequent steps MUST progress through scale levels: molecular -> cellular -> tissue -> organ -> organismal.
+Generate 7-9 steps. The FIRST step must describe the stimulus/IV (or patient presentation, or exposure) at the whole-body or system level.
+For mechanistic/pharmacological papers: subsequent steps MUST progress through scale levels: molecular -> cellular -> tissue -> organ -> organismal.
+For clinical decision/diagnostic papers: subsequent steps must progress through the real clinical chain: assessment -> decision rule -> clinical decision -> intervention -> patient outcome. Do not fabricate molecular biology.
+For epidemiological papers: steps must trace exposure -> biological plausibility -> physiological effect -> health outcome.
 The LAST 1-2 steps must describe the paper's actual DV findings/outcomes with the specific metrics reported.
 Generate 2-4 findings entries -- each one a direct IV->DV relationship with the actual quantitative result from the paper. Use real numbers, effect sizes, p-values, or hazard ratios as reported. These are the most important results of the paper stated concisely.
 Generate 2-4 takeaways that are genuinely actionable and grounded in the paper's findings -- not generic health advice.
