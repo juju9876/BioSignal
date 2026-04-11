@@ -617,6 +617,20 @@ header {
       </div>
       <div id="doi-error"></div>
 
+      <!-- Narration tone selector (input screen) -->
+      <div style="display:flex;align-items:center;gap:8px;margin-top:8px;">
+        <span style="font-family:var(--font-m);font-size:10px;color:var(--text-3);white-space:nowrap;">Narration for:</span>
+        <select id="narration-tone-input" title="Narration audience level"
+          onchange="syncToneSelectors('narration-tone-input')"
+          style="font-family:var(--font-m);font-size:10.5px;padding:4px 6px;border:1px solid var(--border-mid);border-radius:6px;background:var(--bg-input);color:var(--text-2);cursor:pointer;flex:1;max-width:200px;">
+          <option value="expert">🎓 Expert audience</option>
+          <option value="graduate">🔬 Graduate / postdoc</option>
+          <option value="medical_student">🩺 Medical student</option>
+          <option value="undergraduate">📚 Undergraduate</option>
+          <option value="public">🌍 General public</option>
+        </select>
+      </div>
+
       <!-- PDF upload zone -->
       <div id="pdf-upload-zone"
         onclick="document.getElementById('pdf-file-input').click()"
@@ -791,7 +805,7 @@ header {
           🔊 <span id="audio-btn-label" style="font-size:11px;">Narrate</span>
         </button>
         <select id="narration-tone" title="Narration audience level"
-          onchange="onToneChange()"
+          onchange="syncToneSelectors('narration-tone')"
           style="font-family:var(--font-m);font-size:10.5px;padding:4px 6px;border:1px solid var(--border-mid);border-radius:6px;background:var(--bg-input);color:var(--text-2);cursor:pointer;max-width:160px;">
           <option value="expert">🎓 Expert audience</option>
           <option value="graduate">🔬 Graduate / postdoc</option>
@@ -5256,9 +5270,21 @@ var NARRATION_TONES = {
 };
 
 function getNarrationTone() {
-  var sel = document.getElementById('narration-tone');
-  var key = sel ? sel.value : 'undergraduate';
-  return NARRATION_TONES[key] || NARRATION_TONES.undergraduate;
+  // Check either selector (input screen or playbar)
+  var sel = document.getElementById('narration-tone') || document.getElementById('narration-tone-input');
+  var key = sel ? sel.value : 'expert';
+  return NARRATION_TONES[key] || NARRATION_TONES.expert;
+}
+
+function syncToneSelectors(sourceId) {
+  // Keep both tone selectors (input screen + playbar) in sync
+  var val = document.getElementById(sourceId).value;
+  var ids = ['narration-tone', 'narration-tone-input'];
+  ids.forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el && el.value !== val) el.value = val;
+  });
+  onToneChange();
 }
 
 function onToneChange() {
