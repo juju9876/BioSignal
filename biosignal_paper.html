@@ -624,10 +624,11 @@ header {
           onchange="syncToneSelectors('narration-tone-input')"
           style="font-family:var(--font-m);font-size:10.5px;padding:4px 6px;border:1px solid var(--border-mid);border-radius:6px;background:var(--bg-input);color:var(--text-2);cursor:pointer;flex:1;max-width:200px;">
           <option value="expert">🎓 Expert audience</option>
-          <option value="graduate">🔬 Graduate / postdoc</option>
-          <option value="medical_student">🩺 Medical student</option>
+          <option value="postdoc_resident">🔬 Postdoc / Medical resident</option>
+          <option value="grad_medstudent">🩺 Graduate student / Medical student</option>
           <option value="undergraduate">📚 Undergraduate</option>
           <option value="public">🌍 General public</option>
+          <option value="middle_schooler">🧒 Middle schooler</option>
         </select>
       </div>
 
@@ -808,10 +809,11 @@ header {
           onchange="syncToneSelectors('narration-tone')"
           style="font-family:var(--font-m);font-size:10.5px;padding:4px 6px;border:1px solid var(--border-mid);border-radius:6px;background:var(--bg-input);color:var(--text-2);cursor:pointer;max-width:160px;">
           <option value="expert">🎓 Expert audience</option>
-          <option value="graduate">🔬 Graduate / postdoc</option>
-          <option value="medical_student">🩺 Medical student</option>
+          <option value="postdoc_resident">🔬 Postdoc / Medical resident</option>
+          <option value="grad_medstudent">🩺 Graduate student / Medical student</option>
           <option value="undergraduate">📚 Undergraduate</option>
           <option value="public">🌍 General public</option>
+          <option value="middle_schooler">🧒 Middle schooler</option>
         </select>
         <button class="mode-btn" id="trace-replay-btn" onclick="replayTrace()" title="Replay signal trace" style="display:none;white-space:nowrap;font-size:11px;padding:5px 10px;border-color:#D97706;color:#92400E;background:#FFFBEB;">
           ↺ Trace
@@ -5231,23 +5233,25 @@ var NARRATION_TONES = {
       + 'Explain this cascade step in 2-3 spoken sentences using precise technical language. '
       + 'Assume deep familiarity with the biology. Highlight mechanistic nuance and significance.'
   },
-  graduate: {
-    label: 'Graduate / postdoc',
-    summary: 'You are a senior scientist or PI presenting to graduate students and postdoctoral fellows. '
-      + 'Use technical vocabulary but briefly contextualise less familiar concepts. '
-      + 'Highlight the experimental design, key mechanistic insight, and broader research implications.',
-    step:   'You are a senior scientist presenting to graduate students and postdocs. '
-      + 'Explain this cascade step in 2-3 spoken sentences. Use technical language, briefly explain '
-      + 'any specialised terms, and connect the step to the broader research question.'
+  postdoc_resident: {
+    label: 'Postdoc / Medical resident',
+    summary: 'You are a senior scientist or experienced clinician presenting to postdoctoral fellows or medical residents. '
+      + 'Assume strong foundational knowledge — deep molecular biology familiarity for postdocs, '
+      + 'solid pathophysiology and clinical exposure for residents. '
+      + 'Focus on mechanistic depth, evidence quality, and implications for research or clinical decision-making.',
+    step:   'You are a senior scientist or experienced clinician presenting to postdocs or medical residents. '
+      + 'Explain this cascade step in 2-3 spoken sentences. Assume strong prior knowledge, '
+      + 'highlight mechanistic nuance and evidence quality, and connect to research or clinical implications.'
   },
-  medical_student: {
-    label: 'Medical student',
-    summary: 'You are an attending physician presenting to medical students. '
-      + 'Connect the biology to clinical relevance and patient care. '
-      + 'Explain mechanistic terms when introduced. Emphasise what this means for diagnosis, treatment, or outcomes.',
-    step:   'You are an attending physician presenting to medical students. '
-      + 'Explain this cascade step in 2-3 spoken sentences. Connect the biology to clinical practice, '
-      + 'explain any technical terms clearly, and highlight what this means for patient care.'
+  grad_medstudent: {
+    label: 'Graduate student / Medical student',
+    summary: 'You are a professor or attending physician presenting to graduate students or medical students. '
+      + 'Use technical vocabulary but explain specialised terms as you introduce them. '
+      + 'For graduate students, highlight experimental design and mechanistic insight. '
+      + 'For medical students, connect the biology to clinical relevance and patient care.',
+    step:   'You are a professor or attending presenting to graduate or medical students. '
+      + 'Explain this cascade step in 2-3 spoken sentences. Use technical language, '
+      + 'briefly define specialised terms, and connect to the broader scientific or clinical picture.'
   },
   undergraduate: {
     label: 'Undergraduate',
@@ -5258,6 +5262,7 @@ var NARRATION_TONES = {
       + 'Explain this step of a biological cascade in 2 to 3 spoken sentences. '
       + 'Use accessible language, explain any technical terms, and connect it to the overall cascade.'
   },
+
   public: {
     label: 'General public',
     summary: 'You are a science communicator explaining exciting research to a curious general audience with no assumed biology background. '
@@ -5266,6 +5271,16 @@ var NARRATION_TONES = {
     step:   'You are a science communicator explaining research to a curious general audience. '
       + 'Explain this step in 2-3 sentences using everyday language and helpful analogies. '
       + 'Avoid jargon or define any technical terms in plain English. Make it engaging and relevant.'
+  },
+  middle_schooler: {
+    label: 'Middle schooler',
+    summary: 'You are an enthusiastic science teacher presenting exciting research to middle school students aged 11-14. '
+      + 'Use simple, fun language and relatable everyday comparisons. No technical jargon at all. '
+      + 'Focus on the big picture: what question were scientists trying to answer, what did they do, and why does it matter. '
+      + 'Make it feel like a discovery story.',
+    step:   'You are an enthusiastic science teacher explaining research to middle school students. '
+      + 'Explain this step in 2-3 short, simple sentences. Use everyday words and fun comparisons '
+      + 'to things students already know. Make it feel exciting and easy to understand.'
   }
 };
 
