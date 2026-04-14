@@ -1,0 +1,1120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Privacy-friendly analytics by Plausible -->
+  <script async src="https://plausible.io/js/pa-Ua2tJN1iDIxxagyc3cD_J.js"></script>
+  <script>
+    window.plausible=window.plausible||function(){(plausible.q=window.plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};
+    plausible.init()
+  </script>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>BioSignal — Explore &amp; Compare</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,300&display=swap" rel="stylesheet">
+  <style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #F9F8F5;
+  --bg-card: #FFFFFF;
+  --bg-subtle: #F3F2EE;
+  --bg-input: #FFFFFF;
+  --bg-hover: #F5F4F0;
+  --border: rgba(0,0,0,0.09);
+  --border-mid: rgba(0,0,0,0.15);
+  --text: #1A1814;
+  --text-2: #6B6760;
+  --text-3: #A09C96;
+  --accent: #1A5C3A;
+  --accent-l: #E6F2EC;
+  --font-d: 'Fraunces', Georgia, serif;
+  --font-m: 'DM Mono', monospace;
+  --r: 10px;
+  --r-sm: 6px;
+  --shadow: 0 1px 3px rgba(0,0,0,0.07), 0 4px 16px rgba(0,0,0,0.04);
+  --col-a: #1A5FAF;
+  --col-a-l: #EEF4FE;
+  --col-b: #7C3AB7;
+  --col-b-l: #F3EEFE;
+  --col-conv: #1A5C3A;
+  --col-conv-l: #E6F2EC;
+  --col-div: #B45309;
+  --col-div-l: #FEF3C7;
+}
+
+html { font-size: 16px; }
+body {
+  font-family: var(--font-m);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Header ── */
+header {
+  position: sticky; top: 0; z-index: 200;
+  background: rgba(249,248,245,0.92);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 24px;
+  height: 52px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.header-brand {
+  font-family: var(--font-d);
+  font-size: 17px; font-weight: 400;
+  color: var(--text);
+  text-decoration: none;
+  display: flex; align-items: center; gap: 8px;
+}
+.header-badge {
+  font-family: var(--font-m); font-size: 9px;
+  background: #F0EBF8; color: var(--col-b);
+  border: 1px solid #D4B8EF;
+  border-radius: 100px; padding: 2px 8px;
+  letter-spacing: 0.06em; text-transform: uppercase;
+}
+.header-links { display: flex; align-items: center; gap: 10px; }
+.header-link {
+  font-family: var(--font-m); font-size: 11px;
+  color: var(--text-3); text-decoration: none;
+  padding: 4px 8px; border-radius: var(--r-sm);
+  transition: color 0.12s;
+}
+.header-link:hover { color: var(--text); }
+#apikey-indicator {
+  font-family: var(--font-m); font-size: 10px;
+  padding: 4px 10px; border-radius: 100px; cursor: pointer;
+  border: 1px solid var(--border-mid); background: var(--bg-subtle);
+  color: var(--text-3); transition: all 0.12s;
+}
+#apikey-indicator:hover { border-color: var(--accent); color: var(--accent); }
+#apikey-indicator.set { border-color: #9FE1CB; color: #0F6E56; background: #E1F5EE; }
+
+/* ── Input screen ── */
+#input-screen { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 40px 20px 60px; }
+.hero { text-align: center; max-width: 640px; margin-bottom: 32px; }
+.hero-eyebrow { font-family: var(--font-m); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--col-b); margin-bottom: 10px; }
+.hero-title { font-family: var(--font-d); font-size: clamp(28px,5vw,42px); font-weight: 300; line-height: 1.15; color: var(--text); margin-bottom: 14px; }
+.hero-title em { font-style: italic; color: var(--col-b); }
+.hero-sub { font-size: 13px; color: var(--text-2); line-height: 1.7; max-width: 520px; margin: 0 auto; }
+
+.input-card {
+  width: 100%; max-width: 720px;
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: 14px; padding: 24px 28px;
+  box-shadow: var(--shadow);
+}
+
+.stimuli-row {
+  display: grid; grid-template-columns: 1fr 40px 1fr; gap: 0;
+  align-items: center; margin-bottom: 16px;
+}
+.stimulus-col { display: flex; flex-direction: column; gap: 6px; }
+.stimulus-label {
+  font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase;
+  font-weight: 500; padding: 2px 0;
+}
+.label-a { color: var(--col-a); }
+.label-b { color: var(--col-b); }
+.vs-badge {
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-d); font-size: 15px; font-style: italic;
+  color: var(--text-3); margin-top: 20px;
+}
+.stimulus-input {
+  font-family: var(--font-m); font-size: 13px;
+  padding: 10px 12px; border-radius: var(--r-sm);
+  border: 1.5px solid var(--border-mid);
+  background: var(--bg-input); color: var(--text);
+  outline: none; transition: border-color 0.15s;
+  width: 100%;
+}
+.stimulus-input-a:focus { border-color: var(--col-a); }
+.stimulus-input-b:focus { border-color: var(--col-b); }
+
+.explore-btn {
+  width: 100%; padding: 12px; border-radius: var(--r);
+  background: linear-gradient(135deg, var(--col-a) 0%, var(--col-b) 100%);
+  color: #fff; border: none; cursor: pointer;
+  font-family: var(--font-m); font-size: 13px; font-weight: 500;
+  letter-spacing: 0.04em; transition: opacity 0.15s;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.explore-btn:hover { opacity: 0.88; }
+.explore-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+#ec-error {
+  display: none; font-size: 12px; color: #C0392B;
+  padding: 8px 12px; background: #FEF2F2;
+  border: 1px solid #FECACA; border-radius: var(--r-sm); margin-top: 10px;
+}
+
+/* Tone selector */
+.tone-row {
+  display: flex; align-items: center; gap: 8px; margin-top: 12px;
+}
+.tone-label { font-size: 10px; color: var(--text-3); white-space: nowrap; }
+.tone-select {
+  font-family: var(--font-m); font-size: 10.5px;
+  padding: 4px 6px; border: 1px solid var(--border-mid);
+  border-radius: 6px; background: var(--bg-input);
+  color: var(--text-2); cursor: pointer; flex: 1; max-width: 220px;
+}
+
+/* Example pairs */
+.pairs-label {
+  font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--text-3); margin: 18px 0 8px;
+}
+.pairs-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.pair-chip {
+  font-family: var(--font-m); font-size: 11px; padding: 5px 11px;
+  border: 1px solid #C9B8E8; border-radius: 100px;
+  background: #F3EEFE; color: var(--col-b); cursor: pointer; transition: all 0.12s;
+}
+.pair-chip:hover { border-color: var(--col-b); background: #E8D8F8; }
+
+/* ── Loading screen ── */
+#loading-screen {
+  display: none; flex: 1;
+  flex-direction: column; align-items: center; justify-content: center;
+  gap: 16px; padding: 40px;
+}
+.loading-orb {
+  width: 56px; height: 56px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--col-a), var(--col-b));
+  animation: pulse 1.4s ease-in-out infinite;
+}
+@keyframes pulse { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(1.12);opacity:0.8} }
+#loading-msg { font-family: var(--font-d); font-size: 18px; font-weight: 300; color: var(--text); }
+#loading-sub { font-size: 11px; color: var(--text-3); }
+.loading-steps { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; margin-top: 8px; }
+.lstep {
+  font-size: 10px; color: var(--text-3); padding: 3px 10px;
+  border: 1px solid var(--border); border-radius: 100px; transition: all 0.3s;
+}
+.lstep.active { color: var(--col-b); border-color: var(--col-b); background: #F3EEFE; }
+.lstep.done { color: var(--accent); border-color: #9FE1CB; background: var(--accent-l); }
+
+/* ── Cascade screen ── */
+#cascade-screen { display: none; flex: 1; flex-direction: column; }
+
+.cascade-header {
+  position: sticky; top: 52px; z-index: 100;
+  background: rgba(249,248,245,0.95); backdrop-filter: blur(6px);
+  border-bottom: 1px solid var(--border);
+  padding: 10px 20px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+}
+.cascade-stimuli {
+  display: flex; align-items: center; gap: 8px; flex: 1;
+}
+.stim-pill {
+  font-family: var(--font-m); font-size: 11px; font-weight: 500;
+  padding: 4px 12px; border-radius: 100px;
+}
+.stim-pill-a { background: var(--col-a-l); color: var(--col-a); border: 1px solid #B3CFF0; }
+.stim-pill-b { background: var(--col-b-l); color: var(--col-b); border: 1px solid #C9B8E8; }
+.vs-text { font-family: var(--font-d); font-style: italic; font-size: 13px; color: var(--text-3); }
+
+.playbar {
+  display: flex; align-items: center; gap: 8px;
+}
+.ctrl-btn {
+  width: 28px; height: 28px; border-radius: 50%;
+  border: 1px solid var(--border-mid); background: var(--bg-card);
+  cursor: pointer; font-size: 14px; color: var(--text-2);
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.12s;
+}
+.ctrl-btn:hover:not(:disabled) { border-color: var(--col-b); color: var(--col-b); }
+.ctrl-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+.progress-track {
+  flex: 1; min-width: 80px; height: 3px;
+  background: var(--border); border-radius: 2px; overflow: hidden;
+}
+.progress-fill { height: 100%; background: var(--col-b); border-radius: 2px; transition: width 0.3s; width: 0%; }
+.narrate-btn {
+  font-family: var(--font-m); font-size: 11px; padding: 5px 11px;
+  border: 1px solid var(--border-mid); border-radius: 100px;
+  background: var(--bg-card); color: var(--text-2); cursor: pointer;
+  transition: all 0.12s; white-space: nowrap;
+}
+.narrate-btn.active { background: #F3EEFE; border-color: var(--col-b); color: var(--col-b); }
+.step-counter { font-size: 10px; color: var(--text-3); white-space: nowrap; }
+.back-btn {
+  font-family: var(--font-m); font-size: 11px; padding: 5px 10px;
+  border: 1px solid var(--border-mid); border-radius: 6px;
+  background: var(--bg-card); color: var(--text-2); cursor: pointer;
+  transition: all 0.12s;
+}
+.back-btn:hover { border-color: var(--text-2); color: var(--text); }
+
+/* Slide area */
+.slide-area { flex: 1; padding: 24px 20px; max-width: 960px; margin: 0 auto; width: 100%; }
+
+/* Stage band */
+.stage-band {
+  font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase;
+  font-weight: 500; color: var(--col-b); margin-bottom: 14px;
+  display: flex; align-items: center; gap: 10px;
+}
+.stage-band::after { content:''; flex:1; height:1px; background:var(--border); }
+
+/* Two-column description */
+.desc-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;
+}
+.desc-box {
+  background: var(--bg-card); border-radius: var(--r);
+  padding: 14px 16px; border: 1px solid var(--border);
+}
+.desc-box-a { border-top: 3px solid var(--col-a); }
+.desc-box-b { border-top: 3px solid var(--col-b); }
+.desc-box-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 8px;
+}
+.desc-box-title {
+  font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase;
+  font-weight: 500;
+}
+.title-a { color: var(--col-a); }
+.title-b { color: var(--col-b); }
+.verify-link {
+  font-size: 9px; color: var(--text-3); text-decoration: none;
+  padding: 2px 6px; border: 1px solid var(--border);
+  border-radius: 4px; transition: all 0.12s; white-space: nowrap;
+}
+.verify-link:hover { color: var(--col-b); border-color: var(--col-b); }
+.desc-text { font-size: 12px; color: var(--text-2); line-height: 1.7; margin-bottom: 8px; }
+.molecules-row { display: flex; flex-wrap: wrap; gap: 4px; }
+.mol-badge {
+  font-size: 9px; padding: 2px 7px; border-radius: 100px;
+  background: var(--bg-subtle); color: var(--text-3);
+  border: 1px solid var(--border);
+}
+.citation-text {
+  font-size: 9.5px; color: var(--text-3); margin-top: 8px;
+  font-style: italic; line-height: 1.5;
+}
+
+/* Convergence / Divergence bands */
+.conv-div-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
+.conv-band {
+  border-radius: var(--r-sm); padding: 10px 14px;
+  display: flex; align-items: flex-start; gap: 8px;
+}
+.conv-band-convergence {
+  background: var(--col-conv-l); border: 1px solid #9FE1CB;
+}
+.conv-band-divergence {
+  background: var(--col-div-l); border: 1px solid #FAC775;
+}
+.conv-icon { font-size: 13px; flex-shrink: 0; margin-top: 1px; }
+.conv-label {
+  font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase;
+  font-weight: 500; margin-bottom: 3px;
+}
+.conv-label-convergence { color: var(--col-conv); }
+.conv-label-divergence { color: var(--col-div); }
+.conv-text { font-size: 11.5px; line-height: 1.6; }
+.conv-text-convergence { color: #0F5A31; }
+.conv-text-divergence { color: #92400E; }
+
+/* Narration box */
+.narration-box {
+  background: #FAFAF8; border: 1px solid var(--border);
+  border-radius: var(--r); padding: 12px 16px;
+  font-size: 12px; color: var(--text-2); line-height: 1.8;
+  display: none; margin-bottom: 12px; font-style: italic;
+}
+
+/* AI watermark */
+.ai-watermark {
+  font-size: 9px; color: #B45309;
+  background: #FEF3C7; border: 1px solid #FAC775;
+  border-radius: 4px; padding: 6px 12px;
+  text-align: center; margin-bottom: 16px;
+  letter-spacing: 0.03em;
+}
+
+/* Summary slide */
+.summary-slide { background: var(--bg-card); border-radius: 14px; padding: 24px; border: 1px solid var(--border); box-shadow: var(--shadow); }
+.summary-title { font-family: var(--font-d); font-size: 22px; font-weight: 300; margin-bottom: 6px; }
+.summary-meta { font-size: 10px; color: var(--text-3); margin-bottom: 20px; }
+.summary-section-label {
+  font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--text-3); margin-bottom: 8px; margin-top: 16px;
+}
+.summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.summary-box {
+  border-radius: var(--r-sm); padding: 12px 14px;
+  border: 1px solid var(--border);
+}
+.summary-box-a { border-left: 3px solid var(--col-a); background: var(--col-a-l); }
+.summary-box-b { border-left: 3px solid var(--col-b); background: var(--col-b-l); }
+.summary-box-title { font-size: 10px; font-weight: 500; margin-bottom: 6px; }
+.summary-box-title-a { color: var(--col-a); }
+.summary-box-title-b { color: var(--col-b); }
+.summary-box-text { font-size: 11.5px; color: var(--text-2); line-height: 1.6; }
+.synthesis-box {
+  background: var(--bg-subtle); border-radius: var(--r-sm);
+  padding: 12px 14px; border: 1px solid var(--border);
+  margin-top: 12px;
+}
+.synthesis-text { font-size: 12px; color: var(--text-2); line-height: 1.7; }
+
+@media (max-width: 600px) {
+  .desc-grid, .conv-div-row, .summary-grid, .stimuli-row { grid-template-columns: 1fr; }
+  .vs-badge { display: none; }
+}
+
+/* ── API key modal ── */
+.modal-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.4); z-index: 1000;
+  align-items: center; justify-content: center;
+}
+.modal-box {
+  background: var(--bg-card); border-radius: 14px;
+  padding: 28px 30px; max-width: 420px; width: 90%;
+  box-shadow: var(--shadow);
+}
+.modal-title { font-family: var(--font-d); font-size: 20px; font-weight: 300; margin-bottom: 8px; }
+.modal-sub { font-size: 12px; color: var(--text-2); margin-bottom: 16px; line-height: 1.6; }
+.modal-input {
+  width: 100%; font-family: var(--font-m); font-size: 12px;
+  padding: 9px 12px; border: 1.5px solid var(--border-mid);
+  border-radius: var(--r-sm); background: var(--bg-input);
+  color: var(--text); outline: none; margin-bottom: 8px;
+}
+.modal-input:focus { border-color: var(--col-b); }
+.modal-err { font-size: 11px; color: #C0392B; margin-bottom: 10px; display: none; }
+.modal-btns { display: flex; gap: 8px; justify-content: flex-end; }
+.modal-btn {
+  font-family: var(--font-m); font-size: 12px; padding: 8px 18px;
+  border-radius: var(--r-sm); cursor: pointer; border: 1px solid var(--border-mid);
+  background: var(--bg-subtle); color: var(--text-2); transition: all 0.12s;
+}
+.modal-btn.primary {
+  background: var(--col-b); color: #fff; border-color: var(--col-b);
+}
+.modal-btn.primary:hover { opacity: 0.88; }
+  </style>
+</head>
+<body>
+
+<header>
+  <a class="header-brand" href="biosignal_paper.html">
+    🧬 BioSignal
+    <span class="header-badge">Explore &amp; Compare</span>
+  </a>
+  <div class="header-links">
+    <a class="header-link" href="biosignal_paper.html">← Paper analysis</a>
+    <span id="apikey-indicator" title="Set API key">🔑 API key</span>
+  </div>
+</header>
+
+<!-- ── INPUT SCREEN ── -->
+<div id="input-screen">
+  <div class="hero">
+    <p class="hero-eyebrow">Explore &amp; Compare</p>
+    <h1 class="hero-title">Two pathways,<br><em>one narrative.</em></h1>
+    <p class="hero-sub">Enter two biological stimuli to generate a side-by-side cascade grounded in peer-reviewed literature — with convergence and divergence mapped at every scale.</p>
+  </div>
+
+  <div class="input-card">
+    <div class="stimuli-row">
+      <div class="stimulus-col">
+        <div class="stimulus-label label-a">Stimulus A</div>
+        <input class="stimulus-input stimulus-input-a" id="stim-a" type="text"
+          placeholder="e.g. aerobic exercise" autocomplete="off" spellcheck="false"
+          onkeydown="if(event.key==='Enter') explore()"/>
+      </div>
+      <div class="vs-badge">vs</div>
+      <div class="stimulus-col">
+        <div class="stimulus-label label-b">Stimulus B</div>
+        <input class="stimulus-input stimulus-input-b" id="stim-b" type="text"
+          placeholder="e.g. anaerobic exercise" autocomplete="off" spellcheck="false"
+          onkeydown="if(event.key==='Enter') explore()"/>
+      </div>
+    </div>
+
+    <button class="explore-btn" id="explore-btn" onclick="explore()">
+      <span>🔬</span>
+      <span>Explore &amp; Compare</span>
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7h10M8 3l4 4-4 4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+
+    <div id="ec-error"></div>
+
+    <div class="tone-row">
+      <span class="tone-label">Narration for:</span>
+      <select class="tone-select" id="tone-input" onchange="syncTone('tone-input')">
+        <option value="expert">🎓 Expert audience</option>
+        <option value="postdoc_resident">🔬 Postdoc / Medical resident</option>
+        <option value="grad_medstudent">🩺 Graduate student / Medical student</option>
+        <option value="undergraduate">📚 Undergraduate</option>
+        <option value="public">🌍 General public</option>
+        <option value="middle_schooler">🧒 Middle schooler</option>
+      </select>
+    </div>
+
+    <div class="pairs-label">Example pairs — click to load</div>
+    <div class="pairs-chips">
+      <button class="pair-chip" onclick="usePair('Aerobic exercise','Anaerobic exercise')">🏃 Aerobic vs 💪 Anaerobic exercise</button>
+      <button class="pair-chip" onclick="usePair('SGLT2 inhibitor','GLP-1 receptor agonist')">💊 SGLT2 inhibitor vs 💉 GLP-1 agonist</button>
+      <button class="pair-chip" onclick="usePair('Caloric restriction','Intermittent fasting')">🍽️ Caloric restriction vs ⏰ Intermittent fasting</button>
+      <button class="pair-chip" onclick="usePair('Bacterial infection','Viral infection')">🦠 Bacterial vs 🧫 Viral infection</button>
+      <button class="pair-chip" onclick="usePair('mRNA vaccine','Protein subunit vaccine')">💉 mRNA vs 🔬 Protein subunit vaccine</button>
+      <button class="pair-chip" onclick="usePair('Type 1 diabetes','Type 2 diabetes')">🩺 Type 1 vs Type 2 diabetes</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── LOADING SCREEN ── -->
+<div id="loading-screen" style="display:none;flex:1;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:40px;">
+  <div class="loading-orb"></div>
+  <p id="loading-msg" style="font-family:var(--font-d);font-size:18px;font-weight:300;color:var(--text);">Searching the literature…</p>
+  <p id="loading-sub" style="font-size:11px;color:var(--text-3);"></p>
+  <div class="loading-steps">
+    <div class="lstep" id="lstep-0">Literature search</div>
+    <div class="lstep" id="lstep-1">Molecular events</div>
+    <div class="lstep" id="lstep-2">Cellular responses</div>
+    <div class="lstep" id="lstep-3">Systemic effects</div>
+    <div class="lstep" id="lstep-4">Comparing pathways</div>
+  </div>
+</div>
+
+<!-- ── CASCADE SCREEN ── -->
+<div id="cascade-screen" style="display:none;flex:1;flex-direction:column;">
+  <div class="cascade-header">
+    <button class="back-btn" onclick="showInput()">← New comparison</button>
+    <div class="cascade-stimuli">
+      <span class="stim-pill stim-pill-a" id="hdr-stim-a">—</span>
+      <span class="vs-text">vs</span>
+      <span class="stim-pill stim-pill-b" id="hdr-stim-b">—</span>
+    </div>
+    <div class="playbar">
+      <button class="ctrl-btn" id="btn-prev" onclick="stepNav(-1)" disabled>‹</button>
+      <button class="ctrl-btn" id="btn-next" onclick="stepNav(1)">›</button>
+      <div class="progress-track"><div class="progress-fill" id="prog-fill"></div></div>
+      <span class="step-counter"><span id="cur-step">1</span>/<span id="tot-steps">1</span></span>
+      <button class="narrate-btn" id="narrate-btn" onclick="toggleNarrate()">🔊 Narrate</button>
+      <select class="tone-select" id="tone-playbar" onchange="syncTone('tone-playbar')" style="max-width:140px;">
+        <option value="expert">🎓 Expert</option>
+        <option value="postdoc_resident">🔬 Postdoc / Resident</option>
+        <option value="grad_medstudent">🩺 Grad / Med student</option>
+        <option value="undergraduate">📚 Undergraduate</option>
+        <option value="public">🌍 General public</option>
+        <option value="middle_schooler">🧒 Middle schooler</option>
+      </select>
+    </div>
+  </div>
+  <div class="slide-area" id="slide-area"></div>
+</div>
+
+<!-- ── API KEY MODAL ── -->
+<div class="modal-overlay" id="apikey-modal">
+  <div class="modal-box">
+    <div class="modal-title">Anthropic API key</div>
+    <div class="modal-sub">BioSignal uses Claude to generate pathway comparisons. Your key is stored locally in your browser only and never transmitted to or stored by BioSignal.<br><br>Get a free key at <a href="https://console.anthropic.com" target="_blank" style="color:var(--col-b);">console.anthropic.com</a> — new accounts receive complimentary credit.</div>
+    <input class="modal-input" id="apikey-input" type="password" placeholder="sk-ant-api03-…"/>
+    <div class="modal-err" id="apikey-err"></div>
+    <div class="modal-btns">
+      <button class="modal-btn" id="apikey-cancel" onclick="closeApiModal()">Cancel</button>
+      <button class="modal-btn primary" id="apikey-save">Save key</button>
+    </div>
+  </div>
+</div>
+
+<footer style="text-align:center;padding:14px 24px;border-top:1px solid var(--border);background:var(--bg-card);margin-top:auto;">
+  <span style="font-family:var(--font-m);font-size:10px;color:var(--text-3);">
+    &copy; 2025 Carlos Evangelista &mdash; <em>BioSignal: A Biological Pathway Storyteller</em> &mdash; All rights reserved &mdash;
+    Send comments and feedback to <a href="mailto:carlos.chan.evangelista@gmail.com" style="font-family:var(--font-m);font-size:10px;color:var(--text-3);">carlos.chan.evangelista@gmail.com</a>
+  </span>
+</footer>
+
+<script>
+// ── API Key ───────────────────────────────────────────────────────────────────
+function getApiKey() { return localStorage.getItem('biosignal_api_key') || ''; }
+function saveApiKey(k) { localStorage.setItem('biosignal_api_key', k.trim()); }
+
+function updateApiIndicator() {
+  var el = document.getElementById('apikey-indicator');
+  if (getApiKey()) { el.textContent = '🔑 Key set'; el.classList.add('set'); }
+  else { el.textContent = '🔑 API key'; el.classList.remove('set'); }
+}
+
+function showApiModal(cb) {
+  document.getElementById('apikey-modal').style.display = 'flex';
+  document.getElementById('apikey-input').value = getApiKey();
+  document.getElementById('apikey-err').style.display = 'none';
+  document.getElementById('apikey-save').onclick = function() {
+    var k = document.getElementById('apikey-input').value.trim();
+    if (!k.startsWith('sk-ant-')) {
+      document.getElementById('apikey-err').textContent = 'Key should start with sk-ant-';
+      document.getElementById('apikey-err').style.display = 'block';
+      return;
+    }
+    saveApiKey(k); closeApiModal(); updateApiIndicator();
+    if (cb) cb(k);
+  };
+}
+function closeApiModal() { document.getElementById('apikey-modal').style.display = 'none'; }
+document.getElementById('apikey-indicator').onclick = function() { showApiModal(null); };
+updateApiIndicator();
+
+// ── Tone ─────────────────────────────────────────────────────────────────────
+var TONES = {
+  expert: {
+    label: 'Expert audience',
+    prompt: 'You are an expert scientist presenting to a specialist audience. Use precise technical vocabulary. Assume full familiarity with biological mechanisms. Deliver a seamless comparative analysis highlighting mechanistic nuance and field significance.'
+  },
+  postdoc_resident: {
+    label: 'Postdoc / Medical resident',
+    prompt: 'You are a senior scientist or clinician presenting to postdocs or medical residents. Assume strong foundational knowledge. Focus on mechanistic depth, evidence quality, and research or clinical implications of the comparison.'
+  },
+  grad_medstudent: {
+    label: 'Graduate student / Medical student',
+    prompt: 'You are a professor or attending presenting to graduate or medical students. Use technical language but explain specialised terms. Connect the comparison to the broader scientific or clinical picture.'
+  },
+  undergraduate: {
+    label: 'Undergraduate',
+    prompt: 'You are a professor presenting to undergraduate biology students. Use clear accessible language, explain terms as you introduce them, and build the comparison from familiar concepts with enthusiasm and clarity.'
+  },
+  public: {
+    label: 'General public',
+    prompt: 'You are a science communicator presenting to a curious general audience. Use everyday language, vivid analogies, and relatable comparisons. Make the science compelling without assuming any biology background.'
+  },
+  middle_schooler: {
+    label: 'Middle schooler',
+    prompt: 'You are an enthusiastic science teacher presenting to middle school students. Use simple fun language, everyday comparisons, and no jargon. Make it feel like an exciting discovery story.'
+  }
+};
+
+function getTone() {
+  var s = document.getElementById('tone-input') || document.getElementById('tone-playbar');
+  return TONES[s ? s.value : 'expert'] || TONES.expert;
+}
+
+function syncTone(srcId) {
+  var val = document.getElementById(srcId).value;
+  ['tone-input','tone-playbar'].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el && el.value !== val) el.value = val;
+  });
+  // Clear narration cache when tone changes
+  NARR.cache = {};
+  if (window.speechSynthesis) window.speechSynthesis.cancel();
+}
+
+// ── Voice ─────────────────────────────────────────────────────────────────────
+var VOICE = null;
+function resolveVoice() {
+  if (VOICE) return VOICE;
+  var voices = window.speechSynthesis ? window.speechSynthesis.getVoices() : [];
+  if (!voices.length) return null;
+  var preferred = [
+    'Microsoft Aria Online (Natural) - English (United States)',
+    'Microsoft Aria - English (United States)',
+    'Alex',
+    'Microsoft David Desktop','Microsoft Mark Desktop',
+    'Google US English','Samantha','Daniel'
+  ];
+  for (var i = 0; i < preferred.length; i++) {
+    var m = voices.find(function(v) { return v.name === preferred[i]; });
+    if (m) { VOICE = m; return m; }
+  }
+  var en = voices.find(function(v) { return v.lang === 'en-US'; });
+  if (en) { VOICE = en; return en; }
+  VOICE = voices[0] || null;
+  return VOICE;
+}
+if (window.speechSynthesis) {
+  window.speechSynthesis.onvoiceschanged = function() { if (!VOICE) resolveVoice(); };
+  resolveVoice();
+}
+
+// ── Retry fetch ───────────────────────────────────────────────────────────────
+async function apiFetch(fetchFn, statusCb, retries) {
+  retries = retries || 3;
+  var delay = 8000;
+  for (var i = 0; i <= retries; i++) {
+    var r = await fetchFn();
+    if (r.status !== 429 && r.status !== 529) return r;
+    if (i === retries) return r;
+    var s = Math.round(delay/1000);
+    if (statusCb) statusCb('API busy — retrying in ' + s + 's… (' + (i+1) + '/' + retries + ')');
+    await new Promise(function(res) { setTimeout(res, delay); });
+    delay = Math.min(delay * 2, 30000);
+  }
+  return r;
+}
+
+// ── State ─────────────────────────────────────────────────────────────────────
+var CASCADE = null;   // current cascade JSON
+var CUR = 0;          // current step index
+var NARR = { enabled: false, cache: {}, ticket: 0 };
+
+// ── UI helpers ────────────────────────────────────────────────────────────────
+function showScreen(id) {
+  ['input-screen','loading-screen','cascade-screen'].forEach(function(s) {
+    var el = document.getElementById(s);
+    if (el) el.style.display = (s === id) ? (s === 'loading-screen' ? 'flex' : (s === 'cascade-screen' ? 'flex' : 'flex')) : 'none';
+  });
+  if (id === 'cascade-screen') document.getElementById('cascade-screen').style.flexDirection = 'column';
+}
+function showInput() { showScreen('input-screen'); CASCADE = null; CUR = 0; NARR.cache = {}; }
+function showError(msg) {
+  var el = document.getElementById('ec-error');
+  el.textContent = msg; el.style.display = 'block';
+}
+function clearError() { document.getElementById('ec-error').style.display = 'none'; }
+
+var loadingMsgs = [
+  'Searching the literature…',
+  'Tracing molecular mechanisms…',
+  'Mapping cellular responses…',
+  'Connecting tissue and organ effects…',
+  'Comparing the two pathways…',
+  'Weaving the narrative…',
+  'Almost there…',
+];
+var loadingInterval = null;
+function startLoading(sub) {
+  document.getElementById('loading-msg').textContent = loadingMsgs[0];
+  document.getElementById('loading-sub').textContent = sub;
+  var steps = document.querySelectorAll('.lstep');
+  steps.forEach(function(s) { s.classList.remove('active','done'); });
+  var mi = 0, si = 0;
+  loadingInterval = setInterval(function() {
+    mi = (mi+1) % loadingMsgs.length;
+    document.getElementById('loading-msg').textContent = loadingMsgs[mi];
+    if (si < steps.length) {
+      if (si > 0) { steps[si-1].classList.remove('active'); steps[si-1].classList.add('done'); }
+      steps[si].classList.add('active'); si++;
+    }
+  }, 900);
+}
+function stopLoading() { clearInterval(loadingInterval); loadingInterval = null; }
+
+// ── Input helpers ─────────────────────────────────────────────────────────────
+function usePair(a, b) {
+  document.getElementById('stim-a').value = a;
+  document.getElementById('stim-b').value = b;
+}
+
+// ── Main generation ───────────────────────────────────────────────────────────
+async function explore() {
+  var apiKey = getApiKey();
+  if (!apiKey) { showApiModal(function() { explore(); }); return; }
+
+  var stimA = document.getElementById('stim-a').value.trim();
+  var stimB = document.getElementById('stim-b').value.trim();
+  if (!stimA || !stimB) { showError('Please enter both stimuli.'); return; }
+  clearError();
+
+  document.getElementById('explore-btn').disabled = true;
+  showScreen('loading-screen');
+  startLoading(stimA + ' vs ' + stimB);
+
+  var prompt = buildPrompt(stimA, stimB);
+
+  try {
+    var resp = await apiFetch(function() {
+      return fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': apiKey,
+          'anthropic-version': '2023-06-01',
+          'anthropic-dangerous-direct-browser-access': 'true'
+        },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: 6000,
+          tools: [{ type: 'web_search_20250305', name: 'web_search', max_uses: 8 }],
+          messages: [{ role: 'user', content: prompt }]
+        })
+      });
+    }, function(msg) { document.getElementById('loading-msg').textContent = msg; });
+
+    if (!resp.ok) {
+      var err = await resp.json().catch(function() { return {}; });
+      throw new Error((err.error && err.error.message) || 'API error ' + resp.status);
+    }
+
+    var data = await resp.json();
+    var text = (data.content || [])
+      .filter(function(b) { return b.type === 'text'; })
+      .map(function(b) { return b.text; })
+      .join('');
+
+    var clean = text.replace(/```json|```/g, '').trim();
+    var js = clean.indexOf('{'), je = clean.lastIndexOf('}');
+    if (js === -1 || je === -1) throw new Error('No JSON in response. Please try again.');
+    var cascade = JSON.parse(clean.slice(js, je+1));
+    if (!cascade.steps || cascade.steps.length === 0) throw new Error('No steps generated. Please try again.');
+
+    cascade.stimA = stimA;
+    cascade.stimB = stimB;
+    CASCADE = cascade;
+    CUR = 0;
+    NARR.cache = {};
+
+    stopLoading();
+    renderCascade();
+    showScreen('cascade-screen');
+
+  } catch(e) {
+    stopLoading();
+    showScreen('input-screen');
+    showError('Generation failed: ' + (e.message || 'Unknown error'));
+  }
+
+  document.getElementById('explore-btn').disabled = false;
+}
+
+// ── Prompt builder ────────────────────────────────────────────────────────────
+function buildPrompt(a, b) {
+  return 'You are an expert biomedical scientist and science communicator. Use web search to find real peer-reviewed papers supporting each step.\n\n'
+    + 'Generate a comparative biological cascade for: "' + a + '" versus "' + b + '"\n\n'
+    + 'The cascade traces both stimuli in parallel through the same biological scale levels, grounding each step in real published literature found via web search.\n\n'
+    + 'Return ONLY valid JSON, no markdown. Schema:\n'
+    + '{\n'
+    + '  "name": "Short title for the comparison (<=8 words)",\n'
+    + '  "emoji_a": "single emoji for stimulus A",\n'
+    + '  "emoji_b": "single emoji for stimulus B",\n'
+    + '  "summary": {\n'
+    + '    "overview_a": "2-3 sentence overview of ' + a + ' pathway",\n'
+    + '    "overview_b": "2-3 sentence overview of ' + b + ' pathway",\n'
+    + '    "key_similarities": "1-2 sentences on the most important biological similarities",\n'
+    + '    "key_differences": "1-2 sentences on the most important biological differences",\n'
+    + '    "synthesis": "1-2 sentence synthesis takeaway integrating both pathways"\n'
+    + '  },\n'
+    + '  "steps": [\n'
+    + '    {\n'
+    + '      "stage": "Scale level label e.g. stimulus|molecular|cellular|tissue|organ|organismal|outcome",\n'
+    + '      "stimulus_a": {\n'
+    + '        "title": "Step title for ' + a + ' (max 6 words)",\n'
+    + '        "desc": "2-3 sentence mechanistic description grounded in real literature",\n'
+    + '        "molecules": ["key","molecules"],\n'
+    + '        "citation": "First Author et al., Journal Abbrev Year",\n'
+    + '        "pubmed_query": "short PubMed search query to verify this citation (3-5 words)"\n'
+    + '      },\n'
+    + '      "stimulus_b": {\n'
+    + '        "title": "Step title for ' + b + ' (max 6 words)",\n'
+    + '        "desc": "2-3 sentence mechanistic description grounded in real literature",\n'
+    + '        "molecules": ["key","molecules"],\n'
+    + '        "citation": "First Author et al., Journal Abbrev Year",\n'
+    + '        "pubmed_query": "short PubMed search query to verify this citation (3-5 words)"\n'
+    + '      },\n'
+    + '      "convergence": "One sentence on what is biologically similar between the two stimuli at this scale level",\n'
+    + '      "divergence": "One sentence on what is biologically different between the two stimuli at this scale level"\n'
+    + '    }\n'
+    + '  ]\n'
+    + '}\n\n'
+    + 'Generate 7-8 steps progressing through: stimulus -> molecular -> cellular -> tissue -> organ -> organismal -> outcome.\n'
+    + 'Use web search to find real published papers for each step. Citations must be real verifiable papers.\n'
+    + 'The pubmed_query field should be 3-5 words suitable for a PubMed search to find the cited paper.\n'
+    + 'Be scientifically precise and grounded in current literature.';
+}
+
+// ── Render ────────────────────────────────────────────────────────────────────
+function renderCascade() {
+  if (!CASCADE) return;
+
+  document.getElementById('hdr-stim-a').textContent = (CASCADE.emoji_a || '') + ' ' + CASCADE.stimA;
+  document.getElementById('hdr-stim-b').textContent = (CASCADE.emoji_b || '') + ' ' + CASCADE.stimB;
+
+  var total = CASCADE.steps.length + 1; // +1 for summary
+  document.getElementById('tot-steps').textContent = total;
+  updateProgress();
+  renderSlide();
+}
+
+function renderSlide() {
+  if (!CASCADE) return;
+  var area = document.getElementById('slide-area');
+  area.innerHTML = '';
+
+  // Summary slide
+  if (CUR === 0) {
+    renderSummarySlide(area);
+  } else {
+    renderStepSlide(area, CASCADE.steps[CUR - 1], CUR - 1);
+  }
+
+  updateProgress();
+  updateNavBtns();
+
+  // Auto-narrate if enabled
+  if (NARR.enabled) {
+    narrateSlide();
+  }
+}
+
+function renderSummarySlide(area) {
+  var s = CASCADE.summary || {};
+  var html = '<div class="ai-watermark">AI-GENERATED — Educational only · Not verified · Citations require independent verification · Do not use for clinical decisions</div>';
+  html += '<div class="summary-slide">';
+  html += '<div class="summary-title">' + esc(CASCADE.name || (CASCADE.stimA + ' vs ' + CASCADE.stimB)) + '</div>';
+  html += '<div class="summary-meta">AI-generated comparative pathway · Literature-grounded via web search</div>';
+
+  html += '<div class="summary-section-label">Overview</div>';
+  html += '<div class="summary-grid">';
+  html += '<div class="summary-box summary-box-a"><div class="summary-box-title summary-box-title-a">' + esc(CASCADE.emoji_a||'') + ' ' + esc(CASCADE.stimA) + '</div><div class="summary-box-text">' + esc(s.overview_a || '') + '</div></div>';
+  html += '<div class="summary-box summary-box-b"><div class="summary-box-title summary-box-title-b">' + esc(CASCADE.emoji_b||'') + ' ' + esc(CASCADE.stimB) + '</div><div class="summary-box-text">' + esc(s.overview_b || '') + '</div></div>';
+  html += '</div>';
+
+  html += '<div class="summary-section-label">Key similarities &amp; differences</div>';
+  html += '<div class="conv-div-row">';
+  html += '<div class="conv-band conv-band-convergence"><span class="conv-icon">🟢</span><div><div class="conv-label conv-label-convergence">Similarities</div><div class="conv-text conv-text-convergence">' + esc(s.key_similarities || '') + '</div></div></div>';
+  html += '<div class="conv-band conv-band-divergence"><span class="conv-icon">🟡</span><div><div class="conv-label conv-label-divergence">Differences</div><div class="conv-text conv-text-divergence">' + esc(s.key_differences || '') + '</div></div></div>';
+  html += '</div>';
+
+  if (s.synthesis) {
+    html += '<div class="summary-section-label">Synthesis</div>';
+    html += '<div class="synthesis-box"><div class="synthesis-text">' + esc(s.synthesis) + '</div></div>';
+  }
+  html += '</div>';
+
+  // Narration box
+  html += '<div class="narration-box" id="narration-box"></div>';
+  area.innerHTML = html;
+}
+
+function renderStepSlide(area, step, idx) {
+  var sa = step.stimulus_a || {};
+  var sb = step.stimulus_b || {};
+
+  var urlA = 'https://pubmed.ncbi.nlm.nih.gov/?term=' + encodeURIComponent(sa.pubmed_query || sa.citation || '');
+  var urlB = 'https://pubmed.ncbi.nlm.nih.gov/?term=' + encodeURIComponent(sb.pubmed_query || sb.citation || '');
+
+  var html = '<div class="ai-watermark">AI-GENERATED — Educational only · Not verified · Citations require independent verification · Do not use for clinical decisions</div>';
+
+  // Stage band
+  html += '<div class="stage-band">' + esc((step.stage || '').toUpperCase()) + '</div>';
+
+  // Two description boxes
+  html += '<div class="desc-grid">';
+
+  // Box A
+  html += '<div class="desc-box desc-box-a">';
+  html += '<div class="desc-box-header">';
+  html += '<span class="desc-box-title title-a">' + esc(CASCADE.emoji_a||'') + ' ' + esc(sa.title || CASCADE.stimA) + '</span>';
+  html += '<a class="verify-link" href="' + urlA + '" target="_blank" rel="noopener">verify ↗</a>';
+  html += '</div>';
+  html += '<div class="desc-text">' + esc(sa.desc || '') + '</div>';
+  if (sa.molecules && sa.molecules.length) {
+    html += '<div class="molecules-row">' + sa.molecules.slice(0,6).map(function(m) { return '<span class="mol-badge">' + esc(m) + '</span>'; }).join('') + '</div>';
+  }
+  if (sa.citation) html += '<div class="citation-text">📄 ' + esc(sa.citation) + '</div>';
+  html += '</div>';
+
+  // Box B
+  html += '<div class="desc-box desc-box-b">';
+  html += '<div class="desc-box-header">';
+  html += '<span class="desc-box-title title-b">' + esc(CASCADE.emoji_b||'') + ' ' + esc(sb.title || CASCADE.stimB) + '</span>';
+  html += '<a class="verify-link" href="' + urlB + '" target="_blank" rel="noopener">verify ↗</a>';
+  html += '</div>';
+  html += '<div class="desc-text">' + esc(sb.desc || '') + '</div>';
+  if (sb.molecules && sb.molecules.length) {
+    html += '<div class="molecules-row">' + sb.molecules.slice(0,6).map(function(m) { return '<span class="mol-badge">' + esc(m) + '</span>'; }).join('') + '</div>';
+  }
+  if (sb.citation) html += '<div class="citation-text">📄 ' + esc(sb.citation) + '</div>';
+  html += '</div>';
+
+  html += '</div>'; // desc-grid
+
+  // Convergence / divergence bands
+  html += '<div class="conv-div-row">';
+  html += '<div class="conv-band conv-band-convergence"><span class="conv-icon">🟢</span><div><div class="conv-label conv-label-convergence">Convergence</div><div class="conv-text conv-text-convergence">' + esc(step.convergence || '') + '</div></div></div>';
+  html += '<div class="conv-band conv-band-divergence"><span class="conv-icon">🟡</span><div><div class="conv-label conv-label-divergence">Divergence</div><div class="conv-text conv-text-divergence">' + esc(step.divergence || '') + '</div></div></div>';
+  html += '</div>';
+
+  // Narration box
+  html += '<div class="narration-box" id="narration-box"></div>';
+
+  area.innerHTML = html;
+}
+
+function esc(s) {
+  return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ── Navigation ────────────────────────────────────────────────────────────────
+function stepNav(dir) {
+  if (!CASCADE) return;
+  var total = CASCADE.steps.length + 1;
+  var next = CUR + dir;
+  if (next < 0 || next >= total) return;
+  CUR = next;
+  renderSlide();
+}
+
+function updateProgress() {
+  if (!CASCADE) return;
+  var total = CASCADE.steps.length + 1;
+  document.getElementById('cur-step').textContent = CUR + 1;
+  document.getElementById('prog-fill').style.width = ((CUR / (total - 1)) * 100) + '%';
+}
+
+function updateNavBtns() {
+  if (!CASCADE) return;
+  var total = CASCADE.steps.length + 1;
+  document.getElementById('btn-prev').disabled = CUR === 0;
+  document.getElementById('btn-next').disabled = CUR === total - 1;
+}
+
+// ── Narration ─────────────────────────────────────────────────────────────────
+function toggleNarrate() {
+  NARR.enabled = !NARR.enabled;
+  var btn = document.getElementById('narrate-btn');
+  btn.textContent = NARR.enabled ? '🔊 On' : '🔊 Narrate';
+  btn.classList.toggle('active', NARR.enabled);
+  if (NARR.enabled) { narrateSlide(); }
+  else { if (window.speechSynthesis) window.speechSynthesis.cancel(); }
+}
+
+async function narrateSlide() {
+  if (!NARR.enabled || !CASCADE) return;
+  var ticket = ++NARR.ticket;
+  var cacheKey = 'step:' + CUR;
+  var script = NARR.cache[cacheKey];
+
+  if (!script) {
+    script = await generateNarration(CUR);
+    if (ticket !== NARR.ticket) return;
+    if (script) NARR.cache[cacheKey] = script;
+  }
+
+  if (!script || ticket !== NARR.ticket) return;
+
+  var box = document.getElementById('narration-box');
+  if (box) { box.textContent = script; box.style.display = 'block'; }
+
+  speakText(script, ticket, function() {
+    if (ticket !== NARR.ticket || !NARR.enabled) return;
+    // Auto-advance
+    var total = CASCADE.steps.length + 1;
+    if (CUR < total - 1) {
+      setTimeout(function() {
+        if (ticket !== NARR.ticket || !NARR.enabled) return;
+        CUR++;
+        renderSlide();
+      }, 600);
+    }
+  });
+}
+
+async function generateNarration(stepIdx) {
+  var apiKey = getApiKey();
+  if (!apiKey) return null;
+  var tone = getTone();
+
+  var promptText;
+  if (stepIdx === 0) {
+    var s = CASCADE.summary || {};
+    promptText = tone.prompt + ' '
+      + 'Deliver a concise 3-4 sentence spoken introduction to this comparative pathway. '
+      + 'Flowing prose only, no bullet points. '
+      + 'Introduce both stimuli, the key biological question being compared, and the most important similarity and difference.\n\n'
+      + 'Stimulus A: ' + CASCADE.stimA + '\n'
+      + 'Stimulus B: ' + CASCADE.stimB + '\n'
+      + 'Key similarities: ' + (s.key_similarities || '') + '\n'
+      + 'Key differences: ' + (s.key_differences || '') + '\n'
+      + 'Return ONLY the spoken narration text.';
+  } else {
+    var step = CASCADE.steps[stepIdx - 1];
+    var sa = step.stimulus_a || {};
+    var sb = step.stimulus_b || {};
+    var isLast = stepIdx === CASCADE.steps.length;
+    var closing = isLast
+      ? ' End with a brief closing sentence inviting the listener to explore the verify links and the original literature.'
+      : '';
+    promptText = tone.prompt + ' '
+      + 'Deliver a concise 3-4 sentence spoken narration for this step of a comparative biological cascade. '
+      + 'Flowing prose only, no bullet points. '
+      + 'Weave both stimuli into a single coherent narrative — describe what each does at this scale level, '
+      + 'then explicitly note the convergence and divergence.'
+      + closing + '\n\n'
+      + 'Scale level: ' + (step.stage || '') + '\n'
+      + CASCADE.stimA + ': ' + (sa.desc || '') + '\n'
+      + CASCADE.stimB + ': ' + (sb.desc || '') + '\n'
+      + 'Convergence: ' + (step.convergence || '') + '\n'
+      + 'Divergence: ' + (step.divergence || '') + '\n'
+      + 'Return ONLY the spoken narration text.';
+  }
+
+  try {
+    var resp = await apiFetch(function() {
+      return fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': apiKey,
+          'anthropic-version': '2023-06-01',
+          'anthropic-dangerous-direct-browser-access': 'true'
+        },
+        body: JSON.stringify({
+          model: 'claude-haiku-4-5-20251001',
+          max_tokens: 400,
+          messages: [{ role: 'user', content: promptText }]
+        })
+      });
+    }, null);
+    if (!resp.ok) return null;
+    var d = await resp.json();
+    return d.content && d.content[0] ? d.content[0].text.trim() : null;
+  } catch(e) { return null; }
+}
+
+function speakText(text, ticket, onDone) {
+  if (!window.speechSynthesis) { if (onDone) onDone(); return; }
+  window.speechSynthesis.cancel();
+
+  // Split into chunks
+  var sentences = text.match(/[^.!?]+[.!?]+/g) || [text];
+  var chunks = [];
+  var cur = '';
+  sentences.forEach(function(s) {
+    if ((cur + s).split(' ').length > 45) {
+      if (cur) chunks.push(cur.trim());
+      cur = s;
+    } else { cur += ' ' + s; }
+  });
+  if (cur.trim()) chunks.push(cur.trim());
+
+  var idx = 0;
+  function speakNext() {
+    if (ticket !== NARR.ticket || !NARR.enabled || idx >= chunks.length) {
+      if (idx >= chunks.length && onDone) onDone();
+      return;
+    }
+    var utt = new SpeechSynthesisUtterance(chunks[idx++]);
+    var v = resolveVoice();
+    if (v) utt.voice = v;
+    utt.lang = 'en-US'; utt.rate = 0.97;
+    utt.onend = function() { setTimeout(speakNext, 80); };
+    utt.onerror = function() { speakNext(); };
+    window.speechSynthesis.speak(utt);
+  }
+  speakNext();
+}
+
+document.addEventListener('keydown', function(e) {
+  if (document.getElementById('cascade-screen').style.display === 'none') return;
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') stepNav(1);
+  if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   stepNav(-1);
+});
+</script>
+</body>
+</html>
