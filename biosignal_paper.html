@@ -585,6 +585,12 @@ header {
         🔑 Add API key
       </span>
 
+      <a href="biosignal_compare.html"
+        style="font-family:'DM Mono',monospace;font-size:11px;color:#7C3AB7;background:#F3EEFE;border:1px solid #C9B8E8;border-radius:6px;padding:5px 11px;cursor:pointer;transition:all 0.12s;text-decoration:none;white-space:nowrap;"
+        onmouseover="this.style.background='#E8D8F8'"
+        onmouseout="this.style.background='#F3EEFE'">
+        🔬 Explore &amp; Compare
+      </a>
       <button onclick="document.getElementById('disclaimer-modal').style.display='flex'"
         style="font-family:'DM Mono',monospace;font-size:11px;color:var(--text-3);background:none;border:1px solid var(--border);border-radius:6px;padding:5px 11px;cursor:pointer;transition:all 0.12s;"
         onmouseover="this.style.color='var(--text)';this.style.borderColor='var(--border-mid)'"
@@ -635,6 +641,7 @@ header {
           <option value="undergraduate">📚 Undergraduate</option>
           <option value="public">🌍 General public</option>
           <option value="middle_schooler">🧒 Middle schooler</option>
+          <option value="comedy">🧪 Experimental — Stand-up MD/PhD</option>
         </select>
       </div>
 
@@ -820,6 +827,7 @@ header {
           <option value="undergraduate">📚 Undergraduate</option>
           <option value="public">🌍 General public</option>
           <option value="middle_schooler">🧒 Middle schooler</option>
+          <option value="comedy">🧪 Experimental — Stand-up MD/PhD</option>
         </select>
         <button class="mode-btn" id="trace-replay-btn" onclick="replayTrace()" title="Replay signal trace" style="display:none;white-space:nowrap;font-size:11px;padding:5px 10px;border-color:#D97706;color:#92400E;background:#FFFBEB;">
           ↺ Trace
@@ -5287,6 +5295,19 @@ var NARRATION_TONES = {
     step:   'You are an enthusiastic science teacher explaining research to middle school students. '
       + 'Explain this step in 2-3 short, simple sentences. Use everyday words and fun comparisons '
       + 'to things students already know. Make it feel exciting and easy to understand.'
+  },
+  comedy: {
+    label: '🧪 Experimental — Stand-up MD/PhD',
+    summary: 'You are an MD/PhD comedian narrating in the style of John Mulaney and Dara O Briain — self-deprecating, observational, and slightly baffled by the absurdity of biology. '
+      + 'You spent eight years in medical school and you still cannot believe the human body works this way. '
+      + 'Begin with a self-deprecating observation about science or medicine, then introduce the paper with genuine curiosity mixed with comic disbelief. '
+      + 'Use specific concrete observations — not generic jokes. Find the genuinely absurd thing about what the researchers did or found and lean into it. '
+      + 'Keep it accessible to a general audience. No jargon without a funny explanation. 3-4 sentences maximum.',
+    step:   'You are an MD/PhD comedian narrating in the style of John Mulaney and Dara O Briain — self-deprecating, observational, and slightly baffled by the absurdity of biology. '
+      + 'Explain this cascade step to a general audience with comic disbelief at what the human body is actually doing. '
+      + 'Find the genuinely weird or absurd thing about this biological step and make a specific observation about it. '
+      + 'Be self-deprecating — you studied this for years and it still seems improbable. '
+      + 'Flowing prose, 2-3 sentences. End on the observation, not the explanation.'
   }
 };
 
