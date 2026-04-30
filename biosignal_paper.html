@@ -824,6 +824,7 @@ header {
           <button id="export-summary-btn" onclick="exportSummaryPDF()" class="export-btn" style="display:none;border-color:#1A5FAF;color:#1A5FAF;">↓ PDF (summary)</button>
           <button id="export-all-btn" onclick="exportAllPNG()" class="export-btn">↓ PDF (all steps)</button>
           <button id="export-script-btn" onclick="exportNarrationScript()" class="export-btn" style="display:none;border-color:#6B21A8;color:#6B21A8;">↓ TXT (narration script)</button>
+          <button id="export-pdf-btn" onclick="exportCascadePDF()" class="export-btn" style="display:none;border-color:#B45309;color:#B45309;">↓ PDF (full cascade)</button>
         </div>
       </div>
     </aside>
@@ -4442,6 +4443,311 @@ async function exportNarrationScript() {
   }
 }
 
+async function exportCascadePDF() {
+  const state = STATE['A'];
+  if (!state.cascade || !state.cascade.fromPaper) return;
+
+  const cascade = state.cascade;
+  const meta    = cascade.paperMeta || {};
+  const btn     = document.getElementById('export-pdf-btn');
+  const origText = btn.textContent;
+
+  // Ensure narration scripts are generated
+  const apiKey = NARRATION.apiKey || getApiKey();
+  if (!apiKey) {
+    showApiKeyPrompt(function(key) {
+      NARRATION.apiKey = key;
+      exportCascadePDF();
+    });
+    return;
+  }
+  NARRATION.apiKey = apiKey;
+
+  btn.textContent = 'Generating scripts...';
+  btn.disabled = true;
+
+  try {
+    // Generate narration scripts for all steps (uses cache)
+    const total = cascade.steps.length;
+    for (var i = 0; i < total; i++) {
+      btn.textContent = 'Script ' + (i + 1) + '/' + total + '...';
+      await generateNarrationScript(cascade, cascade.steps[i], i);
+    }
+
+    btn.textContent = 'Building PDF...';
+
+    await loadJsPDF();
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ unit: 'pt', format: 'letter' });
+
+    const PW = doc.internal.pageSize.getWidth();
+    const PH = doc.internal.pageSize.getHeight();
+    const ML = 48, MR = 48, MT = 48, MB = 48;
+    const CW = PW - ML - MR;
+    var y = MT;
+
+    // Color palette
+    var C = {
+      accent:    [26, 92, 58],
+      text:      [26, 24, 20],
+      text2:     [107, 103, 96],
+      text3:     [160, 156, 150],
+      border:    [220, 218, 214],
+      bg:        [249, 248, 245],
+      bgCard:    [255, 255, 255],
+      amber:     [180, 83, 9],
+      amberBg:   [254, 243, 199],
+      blue:      [26, 95, 175],
+      blueBg:    [238, 244, 254],
+      green:     [26, 92, 58],
+      greenBg:   [230, 242, 236],
+      purple:    [124, 58, 183],
+    };
+
+    function setColor(rgb, type) {
+      if (type === 'fill') doc.setFillColor(rgb[0], rgb[1], rgb[2]);
+      else doc.setTextColor(rgb[0], rgb[1], rgb[2]);
+    }
+
+    function checkPage(needed) {
+      if (y + needed > PH - MB) {
+        doc.addPage();
+        y = MT;
+        addFooter();
+      }
+    }
+
+    function addFooter() {
+      var pg = doc.internal.getCurrentPageInfo().pageNumber;
+      doc.setFontSize(7); setColor(C.text3, 'text');
+      doc.text('BioSignal — AI-generated educational content — Not verified — biosignal.app', ML, PH - 22);
+      doc.text('Page ' + pg, PW - MR, PH - 22, { align: 'right' });
+    }
+
+    function wrapText(txt, maxW, size) {
+      doc.setFontSize(size);
+      return doc.splitTextToSize(String(txt || ''), maxW);
+    }
+
+    function drawRect(x, w, h, rgb, radius) {
+      setColor(rgb, 'fill');
+      if (radius) {
+        doc.roundedRect(x, y, w, h, 3, 3, 'F');
+      } else {
+        doc.rect(x, y, w, h, 'F');
+      }
+    }
+
+    // ── COVER PAGE ────────────────────────────────────────────────────────────
+    // Header band
+    setColor(C.accent, 'fill');
+    doc.rect(0, 0, PW, 90, 'F');
+
+    doc.setFontSize(22); doc.setFont('helvetica', 'bold');
+    setColor([255,255,255], 'text');
+    doc.text('BioSignal', ML, 40);
+    doc.setFontSize(10); doc.setFont('helvetica', 'normal');
+    doc.text('A Biological Pathway Storyteller', ML, 56);
+    doc.setFontSize(9);
+    doc.text('AI-GENERATED — Educational only — Not verified', ML, 70);
+
+    y = 110;
+
+    // Paper title
+    var titleLines = wrapText(meta.title || cascade.name || 'Untitled', CW, 16);
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(16);
+    setColor(C.text, 'text');
+    doc.text(titleLines, ML, y);
+    y += titleLines.length * 22 + 10;
+
+    // Authors / journal
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(10);
+    setColor(C.text2, 'text');
+    if (meta.authors) {
+      var authLines = wrapText(meta.authors, CW, 10);
+      doc.text(authLines, ML, y); y += authLines.length * 14 + 4;
+    }
+    var journalStr = [meta.journal, meta.year].filter(Boolean).join(', ');
+    if (journalStr) { doc.text(journalStr, ML, y); y += 16; }
+    var doi = cascade._doi || meta.doi || '';
+    if (doi) {
+      setColor(C.blue, 'text');
+      doc.text('DOI: ' + doi, ML, y);
+      doc.link(ML, y - 10, CW, 14, { url: 'https://doi.org/' + doi });
+      y += 16;
+    }
+
+    y += 14;
+
+    // Tone used
+    var toneKey = (document.getElementById('narration-tone') || document.getElementById('narration-tone-input') || {}).value || 'expert';
+    var toneLabel = (NARRATION_TONES && NARRATION_TONES[toneKey]) ? NARRATION_TONES[toneKey].label : toneKey;
+    doc.setFontSize(9); setColor(C.text3, 'text');
+    doc.text('Narration tone: ' + toneLabel, ML, y); y += 14;
+    doc.text('Generated: ' + new Date().toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' }), ML, y); y += 14;
+    doc.text('Source: ' + window.location.href, ML, y); y += 24;
+
+    // Disclaimer box
+    setColor(C.amberBg, 'fill'); doc.roundedRect(ML, y, CW, 44, 3, 3, 'F');
+    setColor(C.amber, 'fill'); doc.rect(ML, y, 3, 44, 'F');
+    doc.setFontSize(8); setColor(C.amber, 'text'); doc.setFont('helvetica', 'bold');
+    doc.text('AI-GENERATED CONTENT', ML + 10, y + 13);
+    doc.setFont('helvetica', 'normal'); setColor([120, 53, 15], 'text');
+    var disclaimer = 'Biological cascades and narration scripts are generated by AI and may contain errors. Verify all claims against the original paper before use in teaching, research, or any professional context.';
+    var dLines = wrapText(disclaimer, CW - 20, 8);
+    doc.text(dLines, ML + 10, y + 25);
+    y += 56;
+
+    addFooter();
+
+    // ── SLIDES ────────────────────────────────────────────────────────────────
+    cascade.steps.forEach(function(step, idx) {
+      doc.addPage(); y = MT; addFooter();
+
+      var cacheKey = (cascade.id || 'c') + ':' + idx;
+      var narrationScript = NARRATION.scriptCache[cacheKey] || '';
+      var isSummary = !!step.isSummarySlide;
+      var slideNum = idx + 1;
+      var slideTotal = cascade.steps.length;
+      var confidence = step.source_confidence || step.sourceConfidence || 'pathway-inferred';
+      var confColors = {
+        'paper-cited':      { bg: C.greenBg,  fg: C.green,  label: 'Paper-cited' },
+        'pathway-inferred': { bg: C.blueBg,   fg: C.blue,   label: 'Pathway-inferred' },
+        'extrapolated':     { bg: C.amberBg,  fg: C.amber,  label: 'Extrapolated' },
+      };
+      var conf = confColors[confidence] || confColors['pathway-inferred'];
+
+      // Slide number chip
+      doc.setFontSize(8); doc.setFont('helvetica', 'bold');
+      setColor(C.accent, 'fill'); doc.roundedRect(ML, y, 60, 16, 3, 3, 'F');
+      setColor([255,255,255], 'text');
+      doc.text('Slide ' + slideNum + ' / ' + slideTotal, ML + 6, y + 11);
+
+      // Stage tag
+      if (!isSummary && step.stage) {
+        setColor(C.bg, 'fill'); doc.roundedRect(ML + 66, y, 80, 16, 3, 3, 'F');
+        setColor(C.text3, 'fill'); doc.rect(ML + 66, y, 3, 16, 'F');
+        doc.setFontSize(7); doc.setFont('helvetica', 'normal'); setColor(C.text3, 'text');
+        doc.text((step.stage || '').toUpperCase(), ML + 72, y + 11);
+      }
+
+      // Confidence badge
+      if (!isSummary) {
+        var cbx = PW - MR - 90;
+        setColor(conf.bg, 'fill'); doc.roundedRect(cbx, y, 90, 16, 3, 3, 'F');
+        doc.setFontSize(7); setColor(conf.fg, 'text'); doc.setFont('helvetica', 'bold');
+        doc.text(conf.label, cbx + 6, y + 11);
+      }
+
+      y += 26;
+
+      // Title
+      var titleStr = isSummary ? 'Paper Summary' : (step.title || '');
+      var titleLines = wrapText(titleStr, CW, 14);
+      doc.setFontSize(14); doc.setFont('helvetica', 'bold'); setColor(C.text, 'text');
+      doc.text(titleLines, ML, y);
+      y += titleLines.length * 20 + 10;
+
+      // Description box
+      if (!isSummary && step.desc) {
+        var descLines = wrapText(step.desc, CW - 20, 10);
+        var boxH = descLines.length * 14 + 20;
+        checkPage(boxH + 10);
+        setColor(C.bg, 'fill'); doc.roundedRect(ML, y, CW, boxH, 3, 3, 'F');
+        doc.setFontSize(10); doc.setFont('helvetica', 'normal'); setColor(C.text2, 'text');
+        doc.text(descLines, ML + 10, y + 14);
+        y += boxH + 10;
+      }
+
+      // Summary slide content
+      if (isSummary) {
+        var summaryFields = [
+          { label: 'Independent Variable (IV)', val: step.iv || step.stimulus },
+          { label: 'Dependent Variable (DV)',   val: step.dv || step.outcome },
+          { label: 'Study Design',              val: step.study_design },
+          { label: 'Key Finding',               val: step.key_finding || step.finding },
+          { label: 'Clinical Relevance',        val: step.clinical_relevance },
+          { label: 'Takeaway',                  val: step.takeaway },
+        ];
+        summaryFields.forEach(function(f) {
+          if (!f.val) return;
+          checkPage(50);
+          var valLines = wrapText(f.val, CW - 20, 10);
+          var boxH = valLines.length * 14 + 24;
+          setColor(C.bg, 'fill'); doc.roundedRect(ML, y, CW, boxH, 3, 3, 'F');
+          setColor(C.accent, 'fill'); doc.rect(ML, y, 3, boxH, 'F');
+          doc.setFontSize(8); doc.setFont('helvetica', 'bold'); setColor(C.text3, 'text');
+          doc.text(f.label.toUpperCase(), ML + 10, y + 12);
+          doc.setFontSize(10); doc.setFont('helvetica', 'normal'); setColor(C.text2, 'text');
+          doc.text(valLines, ML + 10, y + 24);
+          y += boxH + 8;
+        });
+      }
+
+      // Molecules
+      if (!isSummary && step.molecules && step.molecules.length) {
+        checkPage(30);
+        doc.setFontSize(8); doc.setFont('helvetica', 'bold'); setColor(C.text3, 'text');
+        doc.text('KEY MOLECULES', ML, y); y += 12;
+        var molX = ML, molY = y;
+        step.molecules.slice(0, 8).forEach(function(m) {
+          var mw = doc.getTextWidth(m) + 12;
+          if (molX + mw > PW - MR) { molX = ML; molY += 18; y += 18; }
+          setColor(C.bg, 'fill'); doc.roundedRect(molX, molY, mw, 14, 3, 3, 'F');
+          doc.setFontSize(8); doc.setFont('helvetica', 'normal'); setColor(C.text2, 'text');
+          doc.text(m, molX + 6, molY + 10);
+          molX += mw + 6;
+        });
+        y = molY + 22;
+      }
+
+      // DOI verify link
+      if (!isSummary && step.doi) {
+        checkPage(20);
+        doc.setFontSize(8); doc.setFont('helvetica', 'normal'); setColor(C.blue, 'text');
+        doc.text('Source: ' + step.doi, ML, y);
+        doc.link(ML, y - 10, CW, 14, { url: step.doi.startsWith('http') ? step.doi : 'https://doi.org/' + step.doi });
+        y += 16;
+      }
+
+      // Narration script
+      if (narrationScript) {
+        checkPage(60);
+        y += 8;
+        // Purple accent band
+        setColor([245, 240, 255], 'fill'); doc.roundedRect(ML, y, CW, 18, 3, 3, 'F');
+        setColor(C.purple, 'fill'); doc.rect(ML, y, 3, 18, 'F');
+        doc.setFontSize(8); doc.setFont('helvetica', 'bold'); setColor(C.purple, 'text');
+        doc.text('NARRATION SCRIPT', ML + 10, y + 12);
+        y += 20;
+
+        var narrLines = wrapText(narrationScript, CW - 20, 10);
+        var narrH = narrLines.length * 14 + 16;
+        checkPage(narrH);
+        setColor([250, 247, 255], 'fill'); doc.roundedRect(ML, y, CW, narrH, 3, 3, 'F');
+        doc.setFontSize(10); doc.setFont('helvetica', 'italic'); setColor(C.text2, 'text');
+        doc.text(narrLines, ML + 10, y + 12);
+        y += narrH + 6;
+      }
+    });
+
+    // ── SAVE ─────────────────────────────────────────────────────────────────
+    var firstAuthor = meta.authors ? meta.authors.split(';')[0].trim().split(',')[0].trim() : '';
+    var year = meta.year || '';
+    var namePart = (cascade.name || 'BioSignal').replace(/[^a-zA-Z0-9 \-]/g,'').trim().slice(0,40);
+    var filename = [firstAuthor, namePart, year].filter(Boolean).join(' -- ') + ' BioSignal.pdf';
+    doc.save(filename);
+
+    btn.textContent = ' Downloaded';
+    setTimeout(function() { btn.textContent = origText; btn.disabled = false; }, 2000);
+
+  } catch(e) {
+    alert('PDF export failed: ' + e.message);
+    btn.textContent = origText;
+    btn.disabled = false;
+  }
+}
+
 function loadJsPDF() {
   return new Promise(function(resolve, reject) {
     if (window.jspdf) { resolve(); return; }
@@ -6625,6 +6931,9 @@ loadCascade = function(panelId, cascade) {
   // Show script export button only for paper cascades
   const scriptBtn = document.getElementById('export-script-btn');
   if (scriptBtn) scriptBtn.style.display = cascade.fromPaper ? 'block' : 'none';
+  // Show PDF export button only for paper cascades
+  const pdfBtn = document.getElementById('export-pdf-btn');
+  if (pdfBtn) pdfBtn.style.display = cascade.fromPaper ? 'block' : 'none';
   // Show/hide takeaway card -- only for paper-derived cascades
   if (panelId === 'A') {
     renderTakeaways(cascade);
