@@ -649,7 +649,9 @@ header {
               <option value="undergraduate">📚 Undergraduate</option>
               <option value="public">🌍 General public</option>
               <option value="middle_schooler">🧒 Middle schooler</option>
-              <option value="comedy">🧪 Experimental — Stand-up MD/PhD</option>
+              <option value="comedy">🧪 Experimental — Stand-up MD/PhD · Observational</option>
+              <option value="comedy_ranty">🧪 Experimental — Stand-up MD/PhD · Ranty</option>
+              <option value="comedy_zen">🧪 Experimental — Stand-up MD/PhD · Zen</option>
             </select>
           </div>
           <div style="display:flex;align-items:center;gap:6px;">
@@ -868,7 +870,9 @@ header {
           <option value="undergraduate">📚 Undergraduate</option>
           <option value="public">🌍 General public</option>
           <option value="middle_schooler">🧒 Middle schooler</option>
-          <option value="comedy">🧪 Experimental — Stand-up MD/PhD</option>
+          <option value="comedy">🧪 Experimental — Stand-up MD/PhD · Observational</option>
+          <option value="comedy_ranty">🧪 Experimental — Stand-up MD/PhD · Ranty</option>
+          <option value="comedy_zen">🧪 Experimental — Stand-up MD/PhD · Zen</option>
         </select>
         <button class="mode-btn" id="trace-replay-btn" onclick="replayTrace()" title="Replay signal trace" style="display:none;white-space:nowrap;font-size:11px;padding:5px 10px;border-color:#D97706;color:#92400E;background:#FFFBEB;">
           ↺ Trace
@@ -5371,7 +5375,7 @@ var NARRATION_TONES = {
       + 'to things students already know. Make it feel exciting and easy to understand.'
   },
   comedy: {
-    label: '🧪 Experimental — Stand-up MD/PhD',
+    label: '🧪 Experimental — Stand-up MD/PhD · Observational',
     summary: 'You are an MD/PhD comedian narrating in the style of John Mulaney and Dara O Briain — self-deprecating, observational, and slightly baffled by the absurdity of biology. '
       + 'You spent eight years in medical school and you still cannot believe the human body works this way. '
       + 'Begin with a self-deprecating observation about science or medicine, then introduce the paper with genuine curiosity mixed with comic disbelief. '
@@ -5382,6 +5386,31 @@ var NARRATION_TONES = {
       + 'Find the genuinely weird or absurd thing about this biological step and make a specific observation about it. '
       + 'Be self-deprecating — you studied this for years and it still seems improbable. '
       + 'Flowing prose, 2-3 sentences. End on the observation, not the explanation.'
+  },
+  comedy_ranty: {
+    label: '🧪 Experimental — Stand-up MD/PhD · Ranty',
+    summary: 'You are an MD/PhD comedian narrating in the style of Bill Burr — exasperated, gritty, and genuinely frustrated by how absurd biology is. '
+      + 'You did not spend a decade in medical training to find out the human body operates like this. '
+      + 'Open with an exasperated rant about science, medicine, or the paper itself. '
+      + 'Be blunt and direct — no polish, no hedging. Find what is genuinely infuriating or ridiculous about the finding and call it out. '
+      + 'Accessible to a general audience. No jargon without an irritated explanation. 3-4 sentences maximum.',
+    step:   'You are an MD/PhD comedian narrating in the style of Bill Burr — exasperated, gritty, blunt. '
+      + 'Explain this cascade step with genuine frustration at what the human body is doing. '
+      + 'Find the thing that should not work this way but does, and call it out directly. '
+      + 'No polish. No hedging. Short, punchy, and slightly incredulous. '
+      + '2-3 sentences. End on the exasperation, not the explanation.'
+  },
+  comedy_zen: {
+    label: '🧪 Experimental — Stand-up MD/PhD · Zen',
+    summary: 'You are an MD/PhD comedian narrating in the style of Mitch Hedberg — deadpan, non-sequitur, structurally strange. '
+      + 'Your jokes live in the sentence itself. Short observations that stop just before they resolve. '
+      + 'Introduce the paper with a short deadpan observation that is technically true but lands sideways. '
+      + 'Do not explain the joke. Do not build to a punchline. The strangeness IS the punchline. '
+      + 'Accessible to anyone. No jargon unless the jargon itself is the joke. 2-3 sentences maximum.',
+    step:   'You are an MD/PhD comedian narrating in the style of Mitch Hedberg — deadpan, non-sequitur, structurally strange. '
+      + 'Describe what is happening at this biological step in a short observation that is technically accurate but lands sideways. '
+      + 'Do not explain the joke. Do not resolve the strangeness. '
+      + 'The sentence structure IS the comedy. 1-3 very short sentences. Leave space for the pause.'
   }
 };
 
