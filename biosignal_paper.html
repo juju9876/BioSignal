@@ -7287,7 +7287,15 @@ function toggleNarration() {
     // Prime the speech engine with a silent utterance to eliminate the
     // stutter/delay on first real speech (Edge initialises lazily)
     primeSpeechEngine(function() {
-      narrateCurrentStep();
+      if (STATE['A'].playing || isAutoplay()) {
+        // Full advance chain: narrate current slide then auto-advance
+        STATE['A'].playing = true;
+        updatePlayBtn('A');
+        audioPlayAdvance();
+      } else {
+        // Manual mode: just narrate current slide
+        narrateCurrentStep();
+      }
     });
   } else {
     audioStop();
