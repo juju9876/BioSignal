@@ -580,7 +580,7 @@ header {
       <span class="logo-text">BioSignal <span style="font-size:12px;color:var(--accent-m);font-weight:300;font-style:italic;">Pathway Storyteller</span></span>
     </div>
     <div class="header-actions">
-      <span id="apikey-indicator" onclick="showApiKeyPrompt(updateApiKeyIndicator)"
+      <span id="apikey-indicator" onclick="showApiKeyPrompt(updateApiKeyIndicatorAll)"
         style="font-size:11px;padding:5px 11px;border:1px solid #DDD;border-radius:6px;font-family:'DM Mono',monospace;">
         🔑 Add API key
       </span>
@@ -612,6 +612,63 @@ header {
   <div class="input-card">
 
     <div id="pane-doi">
+
+      <!-- STEP 1: API KEY -->
+      <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:14px;padding:10px 12px;border:1px solid var(--border-mid);border-radius:8px;background:var(--bg-subtle);">
+        <div style="font-family:var(--font-m);font-size:10px;font-weight:600;color:var(--accent);background:var(--accent-l);border:1px solid #9FE1CB;border-radius:4px;padding:2px 7px;white-space:nowrap;margin-top:1px;">Step 1</div>
+        <div style="flex:1;">
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+            <span id="apikey-indicator-inline" onclick="showApiKeyPrompt(updateApiKeyIndicatorAll)"
+              style="font-family:var(--font-m);font-size:11px;padding:5px 12px;border:1px solid #DDD;border-radius:6px;cursor:pointer;white-space:nowrap;transition:all 0.15s;">
+              🔑 Add API key to start
+            </span>
+            <a href="https://console.anthropic.com/login" target="_blank" rel="noopener"
+              style="font-family:var(--font-m);font-size:10px;color:var(--accent);text-decoration:none;display:flex;align-items:center;gap:4px;white-space:nowrap;">
+              Sign up for a free API key ↗
+              <span style="font-size:9px;color:var(--text-3);">(free for your first 50+ papers)</span>
+            </a>
+          </div>
+          <div style="font-family:var(--font-m);font-size:9px;color:var(--text-3);margin-top:5px;">
+            Your key is stored in your browser only — never transmitted to or stored by BioSignal.
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 2: NARRATION TONE + AUTOPLAY -->
+      <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:14px;padding:10px 12px;border:1px solid var(--border-mid);border-radius:8px;background:var(--bg-subtle);">
+        <div style="font-family:var(--font-m);font-size:10px;font-weight:600;color:var(--accent);background:var(--accent-l);border:1px solid #9FE1CB;border-radius:4px;padding:2px 7px;white-space:nowrap;margin-top:1px;">Step 2</div>
+        <div style="flex:1;display:flex;flex-wrap:wrap;align-items:center;gap:10px;">
+          <div style="display:flex;align-items:center;gap:6px;">
+            <span style="font-family:var(--font-m);font-size:10px;color:var(--text-3);white-space:nowrap;">Narration for:</span>
+            <select id="narration-tone-input" title="Narration audience level"
+              onchange="syncToneSelectors('narration-tone-input')"
+              style="font-family:var(--font-m);font-size:10.5px;padding:4px 6px;border:1px solid var(--border-mid);border-radius:6px;background:var(--bg-input);color:var(--text-2);cursor:pointer;max-width:210px;">
+              <option value="expert">🎓 Expert audience</option>
+              <option value="postdoc_resident" selected>🔬 Postdoc / Medical resident</option>
+              <option value="grad_medstudent">🩺 Graduate student / Medical student</option>
+              <option value="undergraduate">📚 Undergraduate</option>
+              <option value="public">🌍 General public</option>
+              <option value="middle_schooler">🧒 Middle schooler</option>
+              <option value="comedy">🧪 Experimental — Stand-up MD/PhD</option>
+            </select>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;">
+            <span style="font-family:var(--font-m);font-size:10px;color:var(--text-3);white-space:nowrap;">Autoplay narration:</span>
+            <label style="position:relative;display:inline-block;width:36px;height:20px;cursor:pointer;">
+              <input type="checkbox" id="autoplay-toggle" checked
+                style="opacity:0;width:0;height:0;position:absolute;"
+                onchange="onAutoplayChange(this.checked)"/>
+              <span id="autoplay-track"
+                style="position:absolute;inset:0;border-radius:20px;background:#1D9E75;transition:background 0.2s;"></span>
+              <span id="autoplay-thumb"
+                style="position:absolute;top:3px;left:19px;width:14px;height:14px;border-radius:50%;background:#fff;transition:left 0.2s;box-shadow:0 1px 3px rgba(0,0,0,0.2);"></span>
+            </label>
+            <span id="autoplay-label" style="font-family:var(--font-m);font-size:10px;color:#1D9E75;">On</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 3: DOI INPUT -->
       <p style="font-size:12px;color:var(--text-2);line-height:1.6;margin-bottom:10px;">
         Paste a <strong>DOI</strong>, <strong>PubMed ID</strong>, or <strong>citation</strong> to identify the paper. Optionally upload the full paper PDF below for richer analysis -- particularly useful for paywalled papers where only the abstract is public.
       </p>
@@ -629,22 +686,6 @@ header {
       </div>
       <div id="doi-error"></div>
 
-      <!-- Narration tone selector (input screen) -->
-      <div style="display:flex;align-items:center;gap:8px;margin-top:8px;">
-        <span style="font-family:var(--font-m);font-size:10px;color:var(--text-3);white-space:nowrap;">Narration for:</span>
-        <select id="narration-tone-input" title="Narration audience level"
-          onchange="syncToneSelectors('narration-tone-input')"
-          style="font-family:var(--font-m);font-size:10.5px;padding:4px 6px;border:1px solid var(--border-mid);border-radius:6px;background:var(--bg-input);color:var(--text-2);cursor:pointer;flex:1;max-width:200px;">
-          <option value="expert">🎓 Expert audience</option>
-          <option value="postdoc_resident">🔬 Postdoc / Medical resident</option>
-          <option value="grad_medstudent">🩺 Graduate student / Medical student</option>
-          <option value="undergraduate">📚 Undergraduate</option>
-          <option value="public">🌍 General public</option>
-          <option value="middle_schooler">🧒 Middle schooler</option>
-          <option value="comedy">🧪 Experimental — Stand-up MD/PhD</option>
-        </select>
-      </div>
-
       <!-- PDF upload zone -->
       <div id="pdf-upload-zone"
         onclick="document.getElementById('pdf-file-input').click()"
@@ -655,7 +696,7 @@ header {
         <span style="font-size:18px;">📄</span>
         <div style="flex:1;">
           <div id="pdf-upload-label" style="font-family:'DM Mono',monospace;font-size:11px;color:var(--text-2);font-weight:500;">
-            Step 2 (optional): upload the full paper PDF for richer analysis
+            Step 3 (optional): upload the full paper PDF for richer analysis
           </div>
           <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text-3);margin-top:2px;">
             Enter DOI above first, then upload PDF · stays in your browser · never uploaded
@@ -822,7 +863,7 @@ header {
           onchange="syncToneSelectors('narration-tone')"
           style="font-family:var(--font-m);font-size:10.5px;padding:4px 6px;border:1px solid var(--border-mid);border-radius:6px;background:var(--bg-input);color:var(--text-2);cursor:pointer;max-width:160px;">
           <option value="expert">🎓 Expert audience</option>
-          <option value="postdoc_resident">🔬 Postdoc / Medical resident</option>
+          <option value="postdoc_resident" selected>🔬 Postdoc / Medical resident</option>
           <option value="grad_medstudent">🩺 Graduate student / Medical student</option>
           <option value="undergraduate">📚 Undergraduate</option>
           <option value="public">🌍 General public</option>
@@ -3555,6 +3596,10 @@ function loadCascade(panelId, cascade) {
   // Show AI badge if AI-generated
   const badge = document.getElementById('ai-badge');
   if (badge) badge.style.display = cascade.ai ? 'inline-flex' : 'none';
+  // Auto-start narration if autoplay is on
+  if (isAutoplay() && !NARRATION.enabled) {
+    setTimeout(function() { toggleNarration(); }, 400);
+  }
 }
 
 function showError(msg) {
@@ -3885,14 +3930,43 @@ document.addEventListener('DOMContentLoaded', function() {
   if (cmpB) cmpB.addEventListener('keydown', function(e) { if (e.key==='Enter') generateCompare('B'); });
 
   // Show API key indicator if key is saved
-  updateApiKeyIndicator();
+  updateApiKeyIndicatorAll();
 });
+
+function updateApiKeyIndicatorAll() {
+  // Update both the header indicator and the inline Step 1 indicator
+  updateApiKeyIndicator();
+  const inl = document.getElementById('apikey-indicator-inline');
+  if (!inl) return;
+  const key = getApiKey();
+  inl.textContent = key ? '✓ API key set' : '🔑 Add API key to start';
+  inl.style.color = key ? '#1D9E75' : '#BA7517';
+  inl.style.borderColor = key ? '#9FE1CB' : '#DDD';
+  inl.style.background = key ? '#E1F5EE' : '';
+}
+
+function onAutoplayChange(checked) {
+  var track = document.getElementById('autoplay-track');
+  var thumb = document.getElementById('autoplay-thumb');
+  var label = document.getElementById('autoplay-label');
+  // Also sync the playbar autoplay toggle if present
+  var pb = document.getElementById('autoplay-toggle-playbar');
+  if (pb) pb.checked = checked;
+  if (track) track.style.background = checked ? '#1D9E75' : '#CCC';
+  if (thumb) thumb.style.left = checked ? '19px' : '3px';
+  if (label) { label.textContent = checked ? 'On' : 'Off'; label.style.color = checked ? '#1D9E75' : '#999'; }
+}
+
+function isAutoplay() {
+  var el = document.getElementById('autoplay-toggle');
+  return el ? el.checked : true; // default on
+}
 
 function updateApiKeyIndicator() {
   const ind = document.getElementById('apikey-indicator');
   if (!ind) return;
   const key = getApiKey();
-  ind.textContent = key ? ' API key set' : ' Add API key for any stimulus';
+  ind.textContent = key ? '✓ API key set' : '🔑 Add API key to start';
   ind.style.color = key ? '#1D9E75' : '#BA7517';
   ind.style.cursor = 'pointer';
 }
